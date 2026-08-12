@@ -94,8 +94,8 @@ def register(request):
                 'errors': errors,
             })
 
-        # Генерируем username из телефона
-        username = f'user_{phone.replace("+", "").replace(" ", "").replace("-", "")}'
+        # Логин = номер телефона или имя (если нет телефона)
+        username = phone if phone else first_name.lower()
 
         user = User.objects.create_user(
             username=username,

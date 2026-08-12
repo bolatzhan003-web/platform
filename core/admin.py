@@ -16,13 +16,13 @@ from .models import (
 class CustomUserAdmin(UserAdmin):
     """Управления пользователями: удобный просмотр ролей и поиск."""
 
-    list_display = ('username', 'first_name', 'last_name', 'role', 'is_staff', 'is_active')
+    list_display = ('username', 'first_name', 'phone', 'role', 'is_staff', 'is_active')
     list_filter = ('role', 'is_staff', 'is_active')
-    search_fields = ('username', 'first_name', 'last_name', 'email')
+    search_fields = ('username', 'first_name', 'last_name', 'email', 'phone')
     ordering = ('username',)
 
     fieldsets = UserAdmin.fieldsets + (
-        ('Роль и платформа', {'fields': ('role',)}),
+        ('Роль и платформа', {'fields': ('role', 'phone')}),
     )
 
 
