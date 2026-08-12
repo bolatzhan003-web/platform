@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %}{{ course.title }} — LMS{% endblock %}
+{% block crumb %}<a href="{% url 'dashboard' %}">Мои курсы</a> / {{ course.title }}{% endblock %}
+{% block content %}
+<div class="card" style="background:linear-gradient(135deg,#6d5cff,#9b6cff); border:none; color:#fff; padding:32px;">
+    <div style="display:flex; align-items:flex-start; gap:22px; flex-wrap:wrap;">
+        <div style="width:110px; height:110px; border-radius:20px; background:rgba(255,255,255,.15); display:grid; place-items:center; font-size:52px; flex-shrink:0; box-shadow:var(--shadow);">
+            {% if course.title|slice:":1" == "М" %}📐
+            {% elif course.title|slice:":1" == "Ф" %}⚛️
+            {% elif course.title|slice:":1" == "Г" %}🌍
+            {% elif course.title|slice:":1" == "И" %}💻
+            {% else %}📘{% endif %}
+        </div>
+        <div style="min-width:0; flex:1;">
+            <div style="font-size:var(--fs-2xs); text-transform:uppercase; letter-spacing:.08em; opacity:.75; margin-bottom:6px;">Курс</div>
+            <h1 style="color:#fff; margin-bottom:8px;">{{ course.title }}</h1>
+            <p style="color:rgba(255,255,255,.85); margin:0;">{{ course.description }}</p>
+            <div style="margin-top:16px; display:flex; gap:10px; flex-wrap:wrap;">
+                <span class="badge gray">🎬 {{ lessons.count }} уроков</span>
+                {% if course.author %}<span class="badge gray">🧑‍🏫 {{ course.author.get_full_name|default:course.author.username }}</span>{% endif %}
+            </div>
+            {% if user.role == 'student' and total %}
+            <div style="margin-top:18px; max-width:480px;">
+                <div style="display:flex; justify-content:space-between; font-size:var(--fs-xs); font-weight:600; margin-bottom:6px; color:rgba(255,255,255,.9);">
+                    <span>Ваш прогресс: {{ completed }} / {{ total }} уроков</span>
+                    <span>{{ pct }}%</span>
+                </div>
+                <div class="progress" style="background:rgba(255,255,255,.25); height:8px; margin:0;">
+                    <div style="width:{{ pct }}%; background:linear-gradient(90deg,#22c55e,#4ade80);"></div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<section>
+    <h2 style="margin:24px 0 12px;">Уроки курса</h2>
+    {% if lessons %}
+    <div class="card" style="padding:8px;">
+        <ul class="list">
+            {% for lesson in lessons %}
+            <li class="list-item">
+                <div class="idx {% if lesson.pk in done_ids %}done{% endif %}">{% if lesson.pk in done_ids %}✓{% else %}{{ forloop.counter }}{% endif %}</div>
+                <div class="grow">
+                    <div class="t"><a href="{% url 'lesson_detail' lesson.pk %}">{{ lesson.title }}</a>{% if lesson.pk in done_ids %} <span class="badge green">пройден</span>{% endif %}</div>
+                    <div class="s">
+                        {% if lesson.video_url %}🎬 видеоурок{% endif %}
+                        {% if lesson.video_url and lesson.content %} · {% endif %}
+                        {% if lesson.content %}📄 материалы{% endif %}
+                        {% if lesson.materials.count %}<span class="badge gray">📎 {{ lesson.materials.count }}</span>{% endif %}
+                    </div>
+                </div>
+                {% if lesson.video_url %}<span class="badge">🎬</span>{% endif %}
+                <a href="{% url 'lesson_detail' lesson.pk %}" class="btn sm secondary">{% if lesson.pk in done_ids %}Повторить{% else %}Смотреть →{% endif %}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% else %}
+    <div class="card empty"><div class="big">📭</div><p class="muted">Уроки появятся скоро.</p></div>
+    {% endif %}
+</section>
+{% endblock %}

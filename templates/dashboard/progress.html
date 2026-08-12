@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}Мой прогресс — LMS{% endblock %}
+{% block crumb %}Мой прогресс{% endblock %}
+{% block content %}
+<h1>📈 Мой прогресс</h1>
+<p class="muted" style="margin-bottom:24px;">Сколько ты просмотрел и усвоил в своих курсах.</p>
+
+<div class="card" style="text-align:center; margin-bottom:24px; background:linear-gradient(135deg,#6d5cff,#9b6cff); border:none; color:#fff;">
+    <div style="font-size:var(--fs-sm); text-transform:uppercase; letter-spacing:.08em; opacity:.8; margin-bottom:8px;">Общее усвоение</div>
+    <div style="font-size:52px; font-weight:800; line-height:1;">{{ overall_pct }}%</div>
+    <p style="margin:6px 0 0; opacity:.85;">{{ total_completed }} из {{ total_lessons }} уроков завершено · {{ total_opened }} просмотрено</p>
+</div>
+
+<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); margin-bottom:24px;">
+    <div class="stat-tile"><span class="value">{{ total_lessons }}</span><span class="label">Всего уроков</span></div>
+    <div class="stat-tile"><span class="value">{{ total_opened }}</span><span class="label">Открыто</span></div>
+    <div class="stat-tile"><span class="value">{{ total_completed }}</span><span class="label">Завершено (досмотрено)</span></div>
+</div>
+
+<section>
+    <h2 style="margin:0 0 14px;">По курсам</h2>
+    {% if progress %}
+        {% for p in progress %}
+        <div class="card" style="padding:18px 22px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                <div>
+                    <h3 style="margin:0 0 2px;"><a href="{% url 'course_detail' p.course.pk %}">{{ p.course.title }}</a></h3>
+                    <span class="muted" style="font-size:var(--fs-xs);">
+                        {{ p.completed }}/{{ p.total }} завершено · {{ p.opened }}/{{ p.total }} открыто
+                    </span>
+                </div>
+                <span class="badge {% if p.pct >= 100 %}green{% elif p.pct >= 50 %}amber{% else %}gray{% endif %}" style="font-size:var(--fs-md);">
+                    {{ p.pct }}%
+                </span>
+            </div>
+            <div class="progress" style="margin:12px 0 0; height:8px;">
+                <div style="width:{{ p.pct }}%;"></div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+    <div class="card empty"><div class="big">🎯</div><p class="muted">У вас пока нет курсов — прогресс появится после добавления в курс.</p></div>
+    {% endif %}
+</section>
+{% endblock %}

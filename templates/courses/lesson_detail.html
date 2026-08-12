@@ -1,0 +1,223 @@
+{% extends 'base.html' %}
+{% block title %}{{ lesson.title }} — LMS{% endblock %}
+{% block crumb %}<a href="{% url 'course_detail' course.pk %}">{{ course.title }}</a> / {{ lesson.title }}{% endblock %}
+{% block content %}
+<h1>{{ lesson.title }}</h1>
+
+{% if progress %}
+<div class="alert {% if progress.is_complete %}success{% else %}info{% endif %}" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+    <span>
+        {% if progress.is_complete %}
+            ✅ Урок пройден — видео досмотрено.
+        {% else %}
+            👀 Урок открыт. Досмотрите видео до конца, чтобы отметить его пройденным.
+        {% endif %}
+    </span>
+</div>
+{% endif %}
+
+{% if video_id %}
+    <div style="position: relative; width: 100%; padding-bottom: 56.25%; margin: 20px 0; border-radius: var(--radius, 12px); overflow: hidden; box-shadow: var(--shadow, 0 4px 12px rgba(16, 24, 40, .08));">
+        <iframe
+            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+            src="https://www.youtube.com/embed/{{ video_id }}"
+            title="YouTube video player"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerpolicy="strict-origin-when-cross-origin"
+            allowfullscreen>
+        </iframe>
+    </div>
+
+    <div style="margin:10px 0 20px; text-align:center; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+        {% if lesson.video_url %}
+        <a href="{{ lesson.video_url }}" target="_blank" rel="noopener" class="btn secondary sm" style="text-decoration: none;">
+            📺 Открыть на YouTube
+        </a>
+        {% endif %}
+        {% if progress and not progress.is_complete %}
+        <form method="post" action="{% url 'lesson_detail' lesson.pk %}" style="margin:0;">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="complete">
+            <button type="submit" class="btn secondary sm">✓ Отметить пройденным</button>
+        </form>
+        {% endif %}
+    </div>
+{% elif lesson.video_url %}
+    <div class="video-wrap" style="background:linear-gradient(135deg,#1f2337,#2a2f4a);">
+        <div class="video-fallback">
+            <div>
+                <div class="big">🎬</div>
+                <h3 style="color:#fff; margin:0 0 4px;">Неверная ссылка на YouTube</h3>
+                <p class="msg">Проверьте правильность ссылки на видео. Используйте формат: https://www.youtube.com/watch?v=VIDEO_ID или https://youtu.be/VIDEO_ID</p>
+                {% if progress and not progress.is_complete %}
+                <form method="post" action="{% url 'lesson_detail' lesson.pk %}" style="margin:4px 0 0;">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="complete">
+                    <button type="submit" class="btn secondary">✓ Отметить урок пройденным</button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+<div class="card">
+    <h2 style="margin-bottom:10px;">Материалы урока</h2>
+    {% if lesson.content %}
+        <div style="white-space: pre-wrap; color:var(--text); line-height:1.7;">{{ lesson.content }}</div>
+    {% else %}
+        <p class="muted">Текстовый материал урока пока не добавлен.</p>
+    {% endif %}
+</div>
+
+{# ---------- Файлы материалов ---------- #}
+<div class="card" style="padding:8px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 16px;">
+        <h3 style="margin:0;">Файлы к уроку</h3>
+        <span class="badge gray">📎 {{ materials.count }}</span>
+    </div>
+
+    {% if materials %}
+    <ul class="list">
+        {% for m in materials %}
+        <li class="list-item">
+            <div class="idx">📎</div>
+            <div class="grow">
+                <div class="t"><a href="{{ m.file.url }}" target="_blank" rel="noopener">{{ m.display_name }}</a></div>
+                <div class="s">{{ m.file.size|filesizeformat }} · {{ m.uploaded_at|date:"d.m.Y" }}</div>
+            </div>
+            {% if can_manage %}
+            <form method="post" action="{% url 'lesson_detail' lesson.pk %}" style="margin:0;"
+                  onsubmit="return confirm('Удалить этот файл?');">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="delete">
+                <input type="hidden" name="material_id" value="{{ m.pk }}">
+                <button type="submit" class="btn sm danger" style="box-shadow:none;">Удалить</button>
+            </form>
+            {% endif %}
+            <a href="{{ m.file.url }}" class="btn sm secondary" download>Скачать</a>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p class="muted" style="padding:8px 16px 12px;">Файлов пока нет.</p>
+    {% endif %}
+
+    {% if can_manage %}
+    <div style="padding:12px 16px 16px; border-top:1px solid var(--border); margin-top:8px;">
+        <h4 style="margin:10px 0 8px;">Загрузить новый материал</h4>
+        <form method="post" action="{% url 'lesson_detail' lesson.pk %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="upload">
+            <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end;">
+                <div class="field" style="margin:0; flex:1; min-width:200px;">
+                    <label for="id_title">Название (необязательно)</label>
+                    <input type="text" name="title" id="id_title" placeholder="Например: Конспект урока">
+                </div>
+                <div class="field" style="margin:0; flex:2; min-width:220px;">
+                    <label for="id_file">Файл</label>
+                    <input type="file" name="file" id="id_file" required>
+                </div>
+                <button type="submit" class="btn">Загрузить</button>
+            </div>
+            <p class="faint" style="margin:8px 0 0;">PDF, Word, PowerPoint, изображения, архивы — всё, что поможет ученикам.</p>
+        </form>
+    </div>
+    {% endif %}
+</div>
+
+{% if lessons %}
+<div class="card" style="padding:8px;">
+    <h3 style="padding:8px 16px;">Уроки курса</h3>
+    <ul class="list">
+        {% for l in lessons %}
+        <li class="list-item" style="{% if l.pk == lesson.pk %}background:var(--brand-soft);{% endif %}">
+            <div class="idx {% if l.pk == lesson.pk %}done{% endif %}">
+                {% if l.pk == lesson.pk %}▶{% else %}{{ forloop.counter }}{% endif %}
+            </div>
+            <div class="grow">
+                {% if l.pk == lesson.pk %}
+                    <div class="t">{{ l.title }}</div>
+                    <div class="s">Вы здесь</div>
+                {% else %}
+                    <div class="t"><a href="{% url 'lesson_detail' l.pk %}">{{ l.title }}</a></div>
+                    <div class="s">{% if l.video_url %}🎬 видео{% endif %}{% if l.video_url and l.content %} · {% endif %}{% if l.content %}📄 текст{% endif %}</div>
+                {% endif %}
+            </div>
+            {% if l.pk == lesson.pk %}<span class="badge">текущий</span>{% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+{% if progress and not progress.is_complete and video_id %}
+<script>
+(function() {
+    var markDone = function() {
+        var form = document.createElement("form");
+        form.method = "post";
+        form.action = "{% url 'lesson_detail' lesson.pk %}";
+        var token = document.querySelector("[name=csrfmiddlewaretoken]");
+        if (!token) return;
+
+        var t = document.createElement("input");
+        t.type = "hidden";
+        t.name = "csrfmiddlewaretoken";
+        t.value = token.value;
+
+        var a = document.createElement("input");
+        a.type = "hidden";
+        a.name = "action";
+        a.value = "complete";
+
+        form.appendChild(t);
+        form.appendChild(a);
+        document.body.appendChild(form);
+        form.submit();
+    };
+
+    // Отслеживание завершения видео через YouTube IFrame API
+    var liteYoutube = document.querySelector('lite-youtube');
+    if (liteYoutube) {
+        // Ждем активации плеера (клик пользователя)
+        var checkActivation = setInterval(function() {
+            var iframe = liteYoutube.querySelector('iframe');
+            if (iframe) {
+                clearInterval(checkActivation);
+
+                // Загружаем YouTube IFrame API
+                if (!window.YT) {
+                    var tag = document.createElement('script');
+                    tag.src = 'https://www.youtube.com/iframe_api';
+                    var firstScriptTag = document.getElementsByTagName('script')[0];
+                    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+                }
+
+                // Инициализируем плеер когда API загрузится
+                var initPlayer = function() {
+                    var player = new YT.Player(iframe, {
+                        events: {
+                            'onStateChange': function(event) {
+                                // YT.PlayerState.ENDED = 0
+                                if (event.data === 0) {
+                                    markDone();
+                                }
+                            }
+                        }
+                    });
+                };
+
+                if (window.YT && window.YT.Player) {
+                    initPlayer();
+                } else {
+                    window.onYouTubeIframeAPIReady = initPlayer;
+                }
+            }
+        }, 500);
+    }
+})();
+</script>
+{% endif %}
+{% endblock %}

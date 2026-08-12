@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}Вход — LMS{% endblock %}
+{% block body %}
+<div class="auth-wrap">
+    <div class="auth-card">
+        <a href="{% url 'home' %}" class="logo" style="text-decoration:none;">🎓</a>
+        <h1>С возвращением</h1>
+        <p class="sub">Войдите в свой аккаунт, чтобы продолжить</p>
+        <form method="post">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <ul class="errorlist">{{ form.non_field_errors }}</ul>
+            {% endif %}
+            <div class="field">
+                <label for="id_username">Имя пользователя</label>
+                {{ form.username }}
+            </div>
+            <div class="field">
+                <label for="id_password">Пароль</label>
+                {{ form.password }}
+            </div>
+            <button type="submit" class="btn lg" style="width:100%; justify-content:center;">Войти</button>
+        </form>
+        <div class="divider"></div>
+        <p class="faint" style="text-align:center; margin:0;">
+            Администратор — <a href="{% url 'admin:index' %}">/admin</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

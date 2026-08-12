@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}Все курсы — LMS{% endblock %}
+{% block crumb %}Все курсы{% endblock %}
+{% block content %}
+<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
+    <div>
+        <h1 style="margin-bottom:4px;">Все курсы</h1>
+        <p class="muted" style="margin:0;">Каталог всех курсов платформы.</p>
+    </div>
+</div>
+
+{% if catalog %}
+<div class="grid courses">
+    {% for item in catalog %}
+    {% with course=item.course %}
+    <a href="{% url 'course_detail' course.pk %}" class="course-card" style="color:var(--ink);">
+        <div class="thumb">
+            {% if course.title|slice:":1" == "М" %}📐
+            {% elif course.title|slice:":1" == "Ф" %}⚛️
+            {% elif course.title|slice:":1" == "Г" %}🌍
+            {% elif course.title|slice:":1" == "И" %}💻
+            {% else %}📘{% endif %}
+        </div>
+        <div class="body">
+            <h3>{{ course.title }}</h3>
+            <p class="desc">{{ course.description|truncatechars:90 }}</p>
+            <div class="meta">
+                <span class="badge gray">🎬 {{ course.lesson_count }} ур.</span>
+                {% if course.author %}<span class="badge gray">🧑‍🏫 {{ course.author.get_full_name|default:course.author.username }}</span>{% endif %}
+            </div>
+            {% if item.is_mine %}
+                {% if item.pct %}<div class="progress"><div style="width:{{ item.pct }}%;"></div></div>
+                <span class="badge green">✓ Вы проходите · {{ item.pct }}%</span>{% else %}
+                <span class="badge green">✓ Доступ есть</span>{% endif %}
+            {% else %}
+                <span class="badge gray" style="margin-top:10px;">🔒 По приглашению учителя</span>
+            {% endif %}
+        </div>
+    </a>
+    {% endwith %}
+    {% endfor %}
+</div>
+{% else %}
+<div class="card empty"><div class="big">📚</div><p class="muted">Курсов пока нет.</p></div>
+{% endif %}
+{% endblock %}

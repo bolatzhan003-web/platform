@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block title %}Кабинет учителя — LMS{% endblock %}
+{% block crumb %}Кабинет учителя{% endblock %}
+{% block topactions %}
+<a href="{% url 'admin:core_course_add' %}" class="btn sm">+ Новый курс</a>
+<a href="{% url 'admin:core_classgroup_add' %}" class="btn sm secondary">+ Класс</a>
+{% endblock %}
+{% block content %}
+<h1>🧑‍🏫 Кабинет учителя</h1>
+<p class="muted" style="margin-bottom:24px;">Управляйте курсами и классом в админ-панели — здесь вы видите сводку.</p>
+
+<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); margin-bottom:28px;">
+    <div class="stat-tile"><span class="value">{{ courses.count }}</span><span class="label">Моих курсов</span></div>
+    <div class="stat-tile"><span class="value">{{ student_count }}</span><span class="label">Учеников в курсах</span></div>
+    <div class="stat-tile"><span class="value">{{ classes.count }}</span><span class="label">Моих классов</span></div>
+</div>
+
+<section>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <h2 style="margin:0;">Мои курсы</h2>
+        <a href="{% url 'admin:core_course_add' %}" class="btn sm secondary">+ Добавить</a>
+    </div>
+    {% if courses %}
+    <div class="grid courses">
+        {% for course in courses %}
+        <div class="course-card">
+            <div class="thumb alt{{ forloop.counter|stringformat:'s'|slice:':1' }}">
+                {% if course.title|slice:":1" == "М" %}📐
+                {% elif course.title|slice:":1" == "Ф" %}⚛️
+                {% elif course.title|slice:":1" == "Г" %}🌍
+                {% elif course.title|slice:":1" == "И" %}💻
+                {% else %}📘{% endif %}
+            </div>
+            <div class="body">
+                <h3>{{ course.title }}</h3>
+                <p class="desc">{{ course.description|truncatechars:90 }}</p>
+                <div class="meta">
+                    <span class="badge gray">🎬 {{ course.lesson_count }} ур.</span>
+                    <span class="badge gray">👥 {{ course.students.count }} учеников</span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="card empty"><div class="big">📚</div><p class="muted">У вас пока нет курсов — <a href="{% url 'admin:core_course_add' %}">создайте первый</a>.</p></div>
+    {% endif %}
+</section>
+
+<section style="margin-top:24px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <h2 style="margin:0;">Мои классы</h2>
+        <a href="{% url 'admin:core_classgroup_add' %}" class="btn sm secondary">+ Создать</a>
+    </div>
+    {% if classes %}
+    <div class="card" style="padding:8px;">
+        <ul class="list">
+            {% for cls in classes %}
+            <li class="list-item">
+                <div class="idx">🏫</div>
+                <div class="grow">
+                    <div class="t">{{ cls.name }}</div>
+                    <div class="s">классный руководитель · {{ cls.students.count }} учеников</div>
+                </div>
+                <a href="{% url 'admin:core_classgroup_change' cls.pk %}" class="btn sm ghost">Открыть</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% else %}
+    <div class="card empty"><div class="big">🏫</div><p class="muted">Вы пока не назначены классным руководителем.</p></div>
+    {% endif %}
+</section>
+
+<p class="muted" style="margin-top:8px;">Полное управление контентом — в <a href="{% url 'admin:index' %}">админ-панели</a>.</p>
+{% endblock %}

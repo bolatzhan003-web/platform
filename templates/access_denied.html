@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Доступ закрыт — LMS{% endblock %}
+{% block crumb %}Доступ закрыт{% endblock %}
+{% block content %}
+<div class="card" style="text-align:center; padding:48px 28px; max-width:520px; margin:40px auto; border:none; box-shadow:var(--shadow-lg);">
+    <div style="width:88px; height:88px; border-radius:50%; background:var(--warning); color:#fff; display:grid; place-items:center; font-size:40px; margin:0 auto 20px; box-shadow:var(--shadow);">🔒</div>
+    <h1>Доступ закрыт</h1>
+    <p class="muted" style="margin-bottom:28px;">У вас нет доступа к этому материалу. Возможно, учитель ещё не добавил вас в список учеников курса.</p>
+    <div style="display:flex; gap:12px; justify-content:center;">
+        <a class="btn lg" href="{% url 'dashboard' %}">На дашборд</a>
+        <a class="btn lg secondary" href="{% url 'home' %}">На главную</a>
+    </div>
+</div>
+{% endblock %}

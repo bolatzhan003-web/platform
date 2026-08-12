@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}LMS — образовательная платформа{% endblock %}
+{% block body %}
+<div class="auth-wrap">
+    <div style="width:100%; max-width:760px; text-align:center;">
+        <div class="hero">
+            <div class="logo" style="width:64px; height:64px; border-radius:16px; background:var(--brand-gradient); display:grid; place-items:center; color:#fff; font-size:32px; margin:0 auto 24px; box-shadow:var(--shadow-lg);">🎓</div>
+            <h1>Обучение, которое движется</h1>
+            <p>LMS — платформа для курсов, видеоуроков и материалов. Учитесь в своём темпе, отслеживайте прогресс и получайте доступ к конспектам учителя.</p>
+            <div style="margin-top:28px; display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+                <a class="btn lg" href="{% url 'login' %}">Войти в систему</a>
+                <a class="btn lg secondary" href="{% url 'admin:index' %}">Админ-панель</a>
+            </div>
+        </div>
+        <div class="grid courses" style="grid-template-columns:repeat(3,1fr); text-align:left; margin-top:16px;">
+            <div class="card" role="listitem"><span style="font-size:28px;">📚</span><h3 style="margin-top:10px;">Курсы</h3><p class="faint">Доступ к урокам и материалам по приглашению учителя.</p></div>
+            <div class="card" role="listitem"><span style="font-size:28px;">🎬</span><h3 style="margin-top:10px;">Видеоуроки</h3><p class="faint">Встроенные плееры YouTube и Vimeo прямо в уроках.</p></div>
+            <div class="card" role="listitem"><span style="font-size:28px;">📈</span><h3 style="margin-top:10px;">Прогресс</h3><p class="faint">Отслеживание просмотра и усвоения каждого урока.</p></div>
+        </div>
+        <p class="faint" style="margin-top:28px;">© {% now "Y" %} LMS · Учебная платформа</p>
+    </div>
+</div>
+{% endblock %}
