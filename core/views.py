@@ -60,27 +60,29 @@ def _get_or_create_progress(student, lesson):
 # ---------------------------------------------------------------------------
 @require_http_methods(['GET', 'POST'])
 def register(request):
-    """Регистрация нового пользователя через телефон."""
+    """Регистрация нового пользователя через username."""
     if request.user.is_authenticated:
         return redirect('dashboard')
 
     if request.method == 'POST':
+        username = request.POST.get('username', '').strip()
         first_name = request.POST.get('first_name', '').strip()
-        phone = request.POST.get('phone', '').strip()
         password1 = request.POST.get('password1', '')
         password2 = request.POST.get('password2', '')
 
         errors = []
 
+        if not username:
+            errors.append('Укажите логин (username)')
+        elif len(username) < 3:
+            errors.append('Логин должен быть минимум 3 символа')
+        elif User.objects.filter(username=username).exists():
+            errors.append('Этот логин уже занят. Выберите другой username')
+
         if not first_name:
             errors.append('Укажите имя')
         elif len(first_name) < 2:
             errors.append('Имя должно быть минимум 2 символа')
-
-        if not phone:
-            errors.append('Укажите номер телефона')
-        elif User.objects.filter(phone=phone).exists():
-            errors.append('Этот номер телефона уже зарегистрирован')
 
         if not password1:
             errors.append('Укажите пароль')
@@ -92,19 +94,15 @@ def register(request):
 
         if errors:
             return render(request, 'registration/register.html', {
+                'username': username,
                 'first_name': first_name,
-                'phone': phone,
                 'errors': errors,
             })
-
-        # Логин = номер телефона или имя (если нет телефона)
-        username = phone if phone else first_name.lower()
 
         user = User.objects.create_user(
             username=username,
             password=password1,
             first_name=first_name,
-            phone=phone,
             role='student',
         )
 

@@ -5,7 +5,7 @@
     <div class="auth-card">
         <a href="{% url 'home' %}" class="logo" style="text-decoration:none;">🎓</a>
         <h1>Регистрация</h1>
-        <p class="sub">Создайте аккаунт по номеру телефона</p>
+        <p class="sub">Создайте аккаунт для входа на платформу</p>
 
         {% if errors %}
             <div class="error-box">
@@ -20,20 +20,21 @@
         <form method="post">
             {% csrf_token %}
             <div class="field">
+                <label for="id_username">Логин (username) *</label>
+                <input type="text" id="id_username" name="username" value="{{ username }}" required placeholder="rahat" minlength="3">
+                <small style="color: var(--muted); display: block; margin-top: 4px;">Это будет ваш логин для входа</small>
+            </div>
+            <div class="field">
                 <label for="id_first_name">Ваше имя *</label>
                 <input type="text" id="id_first_name" name="first_name" value="{{ first_name }}" required placeholder="Иван">
             </div>
             <div class="field">
-                <label for="id_phone">Номер телефона *</label>
-                <input type="tel" id="id_phone" name="phone" value="{{ phone }}" required placeholder="+7 (999) 123-45-67">
-            </div>
-            <div class="field">
                 <label for="id_password1">Пароль *</label>
-                <input type="password" id="id_password1" name="password1" required placeholder="Минимум 6 символов">
+                <input type="password" id="id_password1" name="password1" required placeholder="Минимум 6 символов" minlength="6">
             </div>
             <div class="field">
                 <label for="id_password2">Повторите пароль *</label>
-                <input type="password" id="id_password2" name="password2" required placeholder="Повторите пароль">
+                <input type="password" id="id_password2" name="password2" required placeholder="Повторите пароль" minlength="6">
             </div>
             <button type="submit" class="btn lg" style="width:100%; justify-content:center;">Зарегистрироваться</button>
         </form>

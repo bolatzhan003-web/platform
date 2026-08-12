@@ -12,8 +12,9 @@
                 <ul class="errorlist">{{ form.non_field_errors }}</ul>
             {% endif %}
             <div class="field">
-                <label for="id_username">Номер телефона или имя пользователя</label>
+                <label for="id_username">Логин (username)</label>
                 {{ form.username }}
+                <small style="color: var(--muted); display: block; margin-top: 4px;">Введите ваш логин для входа</small>
             </div>
             <div class="field">
                 <label for="id_password">Пароль</label>
