@@ -24,10 +24,8 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-change-me-in-produc
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DJANGO_DEBUG', 'True').lower() in ('true', '1', 'yes')
 
-# Comma-separated list in .env, e.g. ALLOWED_HOSTS=.app.render.com,localhost,127.0.0.1
-ALLOWED_HOSTS = [h.strip() for h in os.getenv(
-    'ALLOWED_HOSTS', 'localhost,127.0.0.1,.onrender.com'
-).split(',') if h.strip()]
+# Allow all hosts in production (Railway/Render will provide the correct domain)
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',') if os.getenv('ALLOWED_HOSTS') else ['*']
 
 # ---------------------------------------------------------------
 # Internationalization
