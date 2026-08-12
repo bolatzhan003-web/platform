@@ -32,7 +32,7 @@ def reverse_create_users(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0001_initial'),
+        ('core', '0004_remove_video_embed_code'),
     ]
 
     operations = [
