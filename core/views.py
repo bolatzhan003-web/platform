@@ -126,10 +126,7 @@ def logout_view(request):
 # Главная / вход
 # ---------------------------------------------------------------------------
 def home(request):
-    """Главная страница с новостями и информацией о платформе."""
-    if request.user.is_authenticated:
-        return redirect('dashboard')
-
+    """Главная страница с hero секцией и новостями."""
     return render(request, 'home.html')
 
 
