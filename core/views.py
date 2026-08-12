@@ -57,35 +57,27 @@ def _get_or_create_progress(student, lesson):
 # ---------------------------------------------------------------------------
 @require_http_methods(['GET', 'POST'])
 def register(request):
-    """Регистрация нового пользователя (только ученики)."""
+    """Регистрация нового пользователя через телефон."""
     if request.user.is_authenticated:
         return redirect('dashboard')
 
     if request.method == 'POST':
-        username = request.POST.get('username', '').strip()
-        email = request.POST.get('email', '').strip()
+        first_name = request.POST.get('first_name', '').strip()
         phone = request.POST.get('phone', '').strip()
         password1 = request.POST.get('password1', '')
         password2 = request.POST.get('password2', '')
-        first_name = request.POST.get('first_name', '').strip()
 
         errors = []
 
-        if not username:
-            errors.append('Укажите имя пользователя')
-        elif len(username) < 3:
-            errors.append('Имя пользователя должно быть минимум 3 символа')
-        elif User.objects.filter(username=username).exists():
-            errors.append('Это имя пользователя уже занято')
+        if not first_name:
+            errors.append('Укажите имя')
+        elif len(first_name) < 2:
+            errors.append('Имя должно быть минимум 2 символа')
 
-        if not email:
-            errors.append('Укажите email')
-        elif User.objects.filter(email=email).exists():
-            errors.append('Этот email уже зарегистрирован')
-
-        if phone:
-            if User.objects.filter(phone=phone).exists():
-                errors.append('Этот номер телефона уже зарегистрирован')
+        if not phone:
+            errors.append('Укажите номер телефона')
+        elif User.objects.filter(phone=phone).exists():
+            errors.append('Этот номер телефона уже зарегистрирован')
 
         if not password1:
             errors.append('Укажите пароль')
@@ -97,19 +89,19 @@ def register(request):
 
         if errors:
             return render(request, 'registration/register.html', {
-                'username': username,
-                'email': email,
-                'phone': phone,
                 'first_name': first_name,
+                'phone': phone,
                 'errors': errors,
             })
 
+        # Генерируем username из телефона
+        username = f'user_{phone.replace("+", "").replace(" ", "").replace("-", "")}'
+
         user = User.objects.create_user(
             username=username,
-            email=email,
             password=password1,
             first_name=first_name,
-            phone=phone if phone else None,
+            phone=phone,
             role='student',
         )
 

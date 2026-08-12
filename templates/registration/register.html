@@ -4,8 +4,8 @@
 <div class="auth-wrap">
     <div class="auth-card">
         <a href="{% url 'home' %}" class="logo" style="text-decoration:none;">🎓</a>
-        <h1>Присоединяйтесь</h1>
-        <p class="sub">Создайте аккаунт, чтобы начать обучение</p>
+        <h1>Регистрация</h1>
+        <p class="sub">Создайте аккаунт по номеру телефона</p>
 
         {% if errors %}
             <div class="error-box">
@@ -20,20 +20,12 @@
         <form method="post">
             {% csrf_token %}
             <div class="field">
-                <label for="id_first_name">Имя (опционально)</label>
-                <input type="text" id="id_first_name" name="first_name" value="{{ first_name }}" placeholder="Иван">
+                <label for="id_first_name">Ваше имя *</label>
+                <input type="text" id="id_first_name" name="first_name" value="{{ first_name }}" required placeholder="Иван">
             </div>
             <div class="field">
-                <label for="id_username">Имя пользователя *</label>
-                <input type="text" id="id_username" name="username" value="{{ username }}" required placeholder="ivan_2024">
-            </div>
-            <div class="field">
-                <label for="id_email">Email *</label>
-                <input type="email" id="id_email" name="email" value="{{ email }}" required placeholder="ivan@example.com">
-            </div>
-            <div class="field">
-                <label for="id_phone">Номер телефона (опционально)</label>
-                <input type="tel" id="id_phone" name="phone" value="{{ phone }}" placeholder="+7 (999) 123-45-67">
+                <label for="id_phone">Номер телефона *</label>
+                <input type="tel" id="id_phone" name="phone" value="{{ phone }}" required placeholder="+7 (999) 123-45-67">
             </div>
             <div class="field">
                 <label for="id_password1">Пароль *</label>
@@ -43,7 +35,7 @@
                 <label for="id_password2">Повторите пароль *</label>
                 <input type="password" id="id_password2" name="password2" required placeholder="Повторите пароль">
             </div>
-            <button type="submit" class="btn lg" style="width:100%; justify-content:center;">Создать аккаунт</button>
+            <button type="submit" class="btn lg" style="width:100%; justify-content:center;">Зарегистрироваться</button>
         </form>
 
         <div class="divider"></div>
@@ -74,4 +66,5 @@
 }
 </style>
 {% endblock %}
+
 
