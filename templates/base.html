@@ -413,7 +413,23 @@
             <div class="actions">
                 {% block topactions %}{% endblock %}
                 <a href="{% url 'profile' %}" class="btn ghost sm">👤 Профиль</a>
-                <a href="{% url 'logout' %}" class="btn ghost sm">Выйти →</a>
+                <form method="post" action="{% url 'logout' %}" style="display:inline; margin:0; padding:0;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn ghost sm" style="border:none; background:none; padding:10px 18px; font-size:14px; color:var(--brand); cursor:pointer;">Выйти →</button>
+                </form>
+            </div>
+        </div>
+        {% else %}
+        <div class="topbar">
+            <div style="flex:1;"></div>
+            <div class="actions">
+                <form method="post" action="{% url 'django.views.i18n.set_language' %}" style="display:inline; margin:0;">
+                    {% csrf_token %}
+                    <select name="language" onchange="this.form.submit();" style="padding:8px 12px; border-radius:8px; border:1px solid var(--border-strong); background:var(--surface); cursor:pointer; font-size:13px; color:var(--text);">
+                        <option value="ru" {% if request.LANGUAGE_CODE == 'ru' %}selected{% endif %}>Русский</option>
+                        <option value="kk" {% if request.LANGUAGE_CODE == 'kk' %}selected{% endif %}>Қазақ</option>
+                    </select>
+                </form>
             </div>
         </div>
         {% endif %}

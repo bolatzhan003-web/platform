@@ -1,6 +1,6 @@
 from functools import wraps
 
-from django.contrib import messages
+from django.contrib import messages, auth
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_http_methods
@@ -109,6 +109,14 @@ def register(request):
         return redirect('login')
 
     return render(request, 'registration/register.html')
+
+
+@require_http_methods(['POST'])
+def logout_view(request):
+    """Выход из аккаунта через POST."""
+    auth.logout(request)
+    messages.success(request, 'Вы вышли из аккаунта.')
+    return redirect('home')
 
 
 # ---------------------------------------------------------------------------
