@@ -1,50 +1,145 @@
 {% extends 'base.html' %}
 {% block title %}{{ platform_settings.name|default:"LMS" }} — образовательная платформа{% endblock %}
 {% block body %}
-<div class="auth-wrap">
-    <div style="width:100%; max-width:760px; text-align:center;">
-        <div class="hero">
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, var(--brand-soft) 0%, rgba(139, 123, 255, 0.05) 100%);
+        border-radius: var(--radius-lg);
+        padding: 60px 40px;
+        text-align: center;
+        margin-bottom: 60px;
+    }
+    .hero-logo {
+        width: 100px;
+        height: 100px;
+        border-radius: 20px;
+        background: var(--brand-gradient);
+        display: grid;
+        place-items: center;
+        color: #fff;
+        font-size: 48px;
+        margin: 0 auto 24px;
+        box-shadow: var(--shadow-lg);
+        overflow: hidden;
+    }
+    .hero-logo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .news-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 24px;
+        margin: 40px 0;
+    }
+    .news-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        transition: transform .15s, box-shadow .15s;
+        display: flex;
+        flex-direction: column;
+    }
+    .news-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+    }
+    .news-image {
+        width: 100%;
+        aspect-ratio: 4/3;
+        object-fit: cover;
+        background: var(--bg-soft);
+    }
+    .news-body {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+    .news-title {
+        font-size: var(--fs-lg);
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+    .news-desc {
+        color: var(--muted);
+        font-size: var(--fs-sm);
+        flex: 1;
+        margin-bottom: 12px;
+    }
+</style>
+
+<div style="width: 100%; max-width: 1100px; margin: 0 auto; padding: 0 var(--gutter);">
+    <div class="hero-section">
+        <div class="hero-logo">
             {% if platform_settings.logo %}
-                <div class="logo" style="width:64px; height:64px; border-radius:16px; background:var(--brand-gradient); display:grid; place-items:center; color:#fff; font-size:32px; margin:0 auto 24px; box-shadow:var(--shadow-lg); overflow:hidden;">
-                    <img src="{{ platform_settings.logo.url }}" alt="Logo" style="width:100%; height:100%; object-fit:cover;">
-                </div>
+                <img src="{{ platform_settings.logo.url }}" alt="Logo" style="object-fit: cover;">
             {% else %}
-                <div class="logo" style="width:64px; height:64px; border-radius:16px; background:var(--brand-gradient); display:grid; place-items:center; color:#fff; font-size:32px; margin:0 auto 24px; box-shadow:var(--shadow-lg);">🎓</div>
+                🎓
             {% endif %}
-            <h1>{{ platform_settings.name|default:"Обучение, которое движется" }}</h1>
-            <p>LMS — платформа для курсов, видеоуроков и материалов. Учитесь в своём темпе, отслеживайте прогресс и получайте доступ к конспектам учителя.</p>
-            <div style="margin-top:28px; display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
-                <a class="btn lg" href="{% url 'login' %}">Войти в систему</a>
-                <a class="btn lg secondary" href="{% url 'admin:index' %}">Админ-панель</a>
-            </div>
         </div>
-        <div class="grid courses" style="grid-template-columns:repeat(3,1fr); text-align:left; margin-top:16px;">
-            <div class="card" role="listitem"><span style="font-size:28px;">📚</span><h3 style="margin-top:10px;">Курсы</h3><p class="faint">Доступ к урокам и материалам по приглашению учителя.</p></div>
-            <div class="card" role="listitem"><span style="font-size:28px;">🎬</span><h3 style="margin-top:10px;">Видеоуроки</h3><p class="faint">Встроенные плееры YouTube и Vimeo прямо в уроках.</p></div>
-            <div class="card" role="listitem"><span style="font-size:28px;">📈</span><h3 style="margin-top:10px;">Прогресс</h3><p class="faint">Отслеживание просмотра и усвоения каждого урока.</p></div>
+        <h1 style="font-size: var(--fs-3xl); margin-bottom: 12px;">{{ platform_settings.name|default:"LMS" }}</h1>
+        <p style="font-size: var(--fs-lg); color: var(--muted); max-width: 600px; margin: 0 auto 32px;">
+            Платформа для обучения: курсы, видеоуроки, материалы и отслеживание прогресса
+        </p>
+        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+            <a class="btn lg" href="{% url 'login' %}">Войти в систему</a>
+            <a class="btn lg secondary" href="{% url 'register' %}">Зарегистрироваться</a>
+            <a class="btn lg secondary" href="{% url 'admin:index' %}">Админ-панель</a>
         </div>
+    </div>
 
-        {% if news %}
-        <div style="margin-top:40px;">
-            <h2 style="text-align:left; margin-bottom:20px;">📰 Новости</h2>
-            <div class="grid courses" style="grid-template-columns:repeat(auto-fill, minmax(250px, 1fr)); text-align:left;">
-                {% for item in news %}
-                <div class="card hoverable" style="display:flex; flex-direction:column;">
-                    {% if item.image %}
-                    <img src="{{ item.image.url }}" alt="{{ item.title }}" style="width:100%; height:150px; object-fit:cover; margin:-24px -24px 16px -24px; border-radius:var(--radius-lg) var(--radius-lg) 0 0;">
-                    {% endif %}
-                    <h3 style="margin-bottom:8px;">{{ item.title }}</h3>
-                    <p style="flex:1; color:var(--muted); font-size:14px;">{{ item.description|truncatewords:30 }}</p>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin: 40px 0;">
+        <div class="card" style="text-align: center; padding: 20px;">
+            <div style="font-size: 36px; margin-bottom: 12px;">📚</div>
+            <div style="font-weight: 600;">Курсы</div>
+            <div style="font-size: var(--fs-sm); color: var(--muted); margin-top: 6px;">Доступ к полным курсам</div>
+        </div>
+        <div class="card" style="text-align: center; padding: 20px;">
+            <div style="font-size: 36px; margin-bottom: 12px;">🎬</div>
+            <div style="font-weight: 600;">Видеоуроки</div>
+            <div style="font-size: var(--fs-sm); color: var(--muted); margin-top: 6px;">Встроенные видеоплееры</div>
+        </div>
+        <div class="card" style="text-align: center; padding: 20px;">
+            <div style="font-size: 36px; margin-bottom: 12px;">📈</div>
+            <div style="font-weight: 600;">Прогресс</div>
+            <div style="font-size: var(--fs-sm); color: var(--muted); margin-top: 6px;">Отслеживание прогресса</div>
+        </div>
+        <div class="card" style="text-align: center; padding: 20px;">
+            <div style="font-size: 36px; margin-bottom: 12px;">📱</div>
+            <div style="font-weight: 600;">Мобильное</div>
+            <div style="font-size: var(--fs-sm); color: var(--muted); margin-top: 6px;">Учитесь везде</div>
+        </div>
+    </div>
+
+    {% if news %}
+    <section style="margin: 60px 0;">
+        <h2 style="text-align: center; font-size: var(--fs-2xl); margin-bottom: 30px;">📰 Последние новости</h2>
+        <div class="news-grid">
+            {% for item in news %}
+            <div class="news-card">
+                {% if item.image %}
+                    <img src="{{ item.image.url }}" alt="{{ item.title }}" class="news-image" style="object-fit: cover;">
+                {% else %}
+                    <div class="news-image" style="background: var(--brand-gradient); display: grid; place-items: center; color: #fff; font-size: 48px;">📰</div>
+                {% endif %}
+                <div class="news-body">
+                    <div class="news-title">{{ item.title }}</div>
+                    <div class="news-desc">{{ item.description|truncatewords:30 }}</div>
                     {% if item.link %}
-                    <a href="{{ item.link }}" target="_blank" class="btn sm" style="margin-top:12px; width:100%; text-align:center;">{{ item.link_text }}</a>
+                    <a href="{{ item.link }}" target="_blank" class="btn sm" style="width: 100%; text-align: center; margin-top: auto;">{{ item.link_text }}</a>
                     {% endif %}
                 </div>
-                {% endfor %}
             </div>
+            {% endfor %}
         </div>
-        {% endif %}
+    </section>
+    {% endif %}
 
-        <p class="faint" style="margin-top:28px;">© {% now "Y" %} {{ platform_settings.name|default:"LMS" }} · Учебная платформа</p>
-    </div>
+    <footer style="text-align: center; padding: 40px 0; color: var(--muted); border-top: 1px solid var(--border); margin-top: 60px;">
+        <p>© {% now "Y" %} {{ platform_settings.name|default:"LMS" }} · Образовательная платформа</p>
+    </footer>
 </div>
 {% endblock %}
