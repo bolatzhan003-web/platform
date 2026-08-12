@@ -64,6 +64,7 @@ def register(request):
     if request.method == 'POST':
         username = request.POST.get('username', '').strip()
         email = request.POST.get('email', '').strip()
+        phone = request.POST.get('phone', '').strip()
         password1 = request.POST.get('password1', '')
         password2 = request.POST.get('password2', '')
         first_name = request.POST.get('first_name', '').strip()
@@ -82,6 +83,10 @@ def register(request):
         elif User.objects.filter(email=email).exists():
             errors.append('Этот email уже зарегистрирован')
 
+        if phone:
+            if User.objects.filter(phone=phone).exists():
+                errors.append('Этот номер телефона уже зарегистрирован')
+
         if not password1:
             errors.append('Укажите пароль')
         elif len(password1) < 6:
@@ -94,6 +99,7 @@ def register(request):
             return render(request, 'registration/register.html', {
                 'username': username,
                 'email': email,
+                'phone': phone,
                 'first_name': first_name,
                 'errors': errors,
             })
@@ -103,6 +109,7 @@ def register(request):
             email=email,
             password=password1,
             first_name=first_name,
+            phone=phone if phone else None,
             role='student',
         )
 
