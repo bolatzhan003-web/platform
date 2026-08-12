@@ -23,8 +23,19 @@ class CustomUserAdmin(UserAdmin):
     search_fields = ('username', 'first_name', 'last_name', 'email', 'phone')
     ordering = ('username',)
 
-    fieldsets = UserAdmin.fieldsets + (
-        ('Роль и платформа', {'fields': ('role', 'phone')}),
+    fieldsets = (
+        ('Основное', {'fields': ('username', 'first_name', 'last_name', 'email', 'phone')}),
+        ('Пароль', {'fields': ('password',), 'classes': ('wide',)}),
+        ('Роль и доступ', {'fields': ('role', 'is_staff', 'is_superuser', 'is_active')}),
+        ('Группы и права', {'fields': ('groups', 'user_permissions')}),
+        ('Даты', {'fields': ('last_login', 'date_joined')}),
+    )
+
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('username', 'password1', 'password2', 'first_name', 'phone', 'email', 'role'),
+        }),
     )
 
 
