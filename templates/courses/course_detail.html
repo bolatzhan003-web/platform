@@ -38,24 +38,32 @@
     <h2 style="margin:24px 0 12px;">Уроки курса</h2>
     {% if lessons %}
     <div class="card" style="padding:8px;">
-        <ul class="list">
-            {% for lesson in lessons %}
-            <li class="list-item">
-                <div class="idx {% if lesson.pk in done_ids %}done{% endif %}">{% if lesson.pk in done_ids %}✓{% else %}{{ forloop.counter }}{% endif %}</div>
-                <div class="grow">
-                    <div class="t"><a href="{% url 'lesson_detail' lesson.pk %}">{{ lesson.title }}</a>{% if lesson.pk in done_ids %} <span class="badge green">пройден</span>{% endif %}</div>
-                    <div class="s">
-                        {% if lesson.video_url %}🎬 видеоурок{% endif %}
-                        {% if lesson.video_url and lesson.content %} · {% endif %}
-                        {% if lesson.content %}📄 материалы{% endif %}
-                        {% if lesson.materials.count %}<span class="badge gray">📎 {{ lesson.materials.count }}</span>{% endif %}
+        {% regroup lessons by section as lessons_by_section %}
+        {% for section_group in lessons_by_section %}
+            {% if section_group.grouper %}
+            <div style="padding:12px 16px; background:var(--bg-soft); border-bottom:1px solid var(--border); font-weight:600; color:var(--brand); margin-bottom:4px;">
+                📚 {{ section_group.grouper }}
+            </div>
+            {% endif %}
+            <ul class="list">
+                {% for lesson in section_group.list %}
+                <li class="list-item">
+                    <div class="idx {% if lesson.pk in done_ids %}done{% endif %}">{% if lesson.pk in done_ids %}✓{% else %}{{ forloop.counter }}{% endif %}</div>
+                    <div class="grow">
+                        <div class="t"><a href="{% url 'lesson_detail' lesson.pk %}">{{ lesson.title }}</a>{% if lesson.pk in done_ids %} <span class="badge green">пройден</span>{% endif %}</div>
+                        <div class="s">
+                            {% if lesson.video_url %}🎬 видеоурок{% endif %}
+                            {% if lesson.video_url and lesson.content %} · {% endif %}
+                            {% if lesson.content %}📄 материалы{% endif %}
+                            {% if lesson.materials.count %}<span class="badge gray">📎 {{ lesson.materials.count }}</span>{% endif %}
+                        </div>
                     </div>
-                </div>
-                {% if lesson.video_url %}<span class="badge">🎬</span>{% endif %}
-                <a href="{% url 'lesson_detail' lesson.pk %}" class="btn sm secondary">{% if lesson.pk in done_ids %}Повторить{% else %}Смотреть →{% endif %}</a>
-            </li>
-            {% endfor %}
-        </ul>
+                    {% if lesson.video_url %}<span class="badge">🎬</span>{% endif %}
+                    <a href="{% url 'lesson_detail' lesson.pk %}" class="btn sm secondary">{% if lesson.pk in done_ids %}Повторить{% else %}Смотреть →{% endif %}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        {% endfor %}
     </div>
     {% else %}
     <div class="card empty"><div class="big">📭</div><p class="muted">Уроки появятся скоро.</p></div>

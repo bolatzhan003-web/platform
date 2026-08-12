@@ -67,11 +67,16 @@ class LessonMaterialInline(admin.TabularInline):
 
 @admin.register(Lesson)
 class LessonAdmin(admin.ModelAdmin):
-    list_display = ('title', 'course', 'order', 'video_url')
+    list_display = ('title', 'course', 'section', 'order', 'video_url')
     list_editable = ('order',)
-    list_filter = ('course',)
-    search_fields = ('title', 'content', 'course__title')
+    list_filter = ('course', 'section')
+    search_fields = ('title', 'content', 'course__title', 'section')
     inlines = [LessonMaterialInline]
+    fieldsets = (
+        ('Основное', {'fields': ('course', 'title', 'section')}),
+        ('Содержание', {'fields': ('video_url', 'content')}),
+        ('Порядок', {'fields': ('order',)}),
+    )
 
 
 @admin.register(LessonMaterial)

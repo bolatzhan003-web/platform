@@ -147,6 +147,7 @@ class Lesson(models.Model):
         on_delete=models.CASCADE,
         related_name='lessons',
     )
+    section = models.CharField('Раздел/Модуль', max_length=200, blank=True, help_text='Название раздела (например: Модуль 1, Введение)')
     title = models.CharField('Заголовок урока', max_length=200)
     video_url = models.URLField(
         'Видео YouTube',
