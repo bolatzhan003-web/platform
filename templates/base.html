@@ -404,7 +404,13 @@
             {% endif %}
         </nav>
         <a href="{% url 'profile' %}" class="user-card" style="text-decoration:none; color:var(--ink);">
-            <div class="avatar">{{ user.get_full_name|default:user.username|first|upper }}</div>
+            <div class="avatar">
+                {% if user.avatar %}
+                    <img src="{{ user.avatar.url }}" alt="{{ user.get_full_name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                {% else %}
+                    {{ user.get_full_name|default:user.username|first|upper }}
+                {% endif %}
+            </div>
             <div class="meta">
                 <div class="uname">{{ user.get_full_name|default:user.username }}</div>
                 <div class="urole">{{ user.get_role_display }} · профиль →</div>
@@ -413,10 +419,10 @@
 
         {% if news %}
         <div style="margin-top:20px; padding-top:20px; border-top:1px solid var(--border);">
-            <div class="nav-label" style="margin-bottom:10px;">📰 Новости</div>
+            <a href="{% url 'news_list' %}" class="nav-label" style="margin-bottom:10px; display:flex; align-items:center; gap:6px; cursor:pointer; color:var(--faint); text-decoration:none;">📰 Все новости →</a>
             <div style="display:flex; flex-direction:column; gap:8px;">
                 {% for item in news|slice:":3" %}
-                <a href="{% if item.link %}{{ item.link }}{% else %}#{% endif %}" target="{% if item.link %}_blank{% endif %}" style="padding:8px; border-radius:8px; background:var(--surface-2); text-decoration:none; color:var(--text); transition:background .2s; font-size:12px; line-height:1.4;">
+                <a href="{% url 'news_list' %}" style="padding:8px; border-radius:8px; background:var(--surface-2); text-decoration:none; color:var(--text); transition:background .2s; font-size:12px; line-height:1.4;">
                     <div style="font-weight:600; color:var(--ink); margin-bottom:2px;">{{ item.title|truncatewords:5 }}</div>
                     <div style="color:var(--muted); font-size:11px;">{{ item.description|truncatewords:10 }}</div>
                 </a>

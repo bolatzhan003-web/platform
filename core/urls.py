@@ -22,6 +22,7 @@ urlpatterns = [
     # Каталог и прогресс
     path('courses/', views.course_catalog, name='course_catalog'),
     path('progress/', views.my_progress, name='my_progress'),
+    path('news/', views.news_list, name='news_list'),
 
     # Профиль и смена пароля
     path('profile/', views.profile, name='profile'),

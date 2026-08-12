@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block title %}Новости — {{ platform_settings.name|default:"LMS" }}{% endblock %}
+{% block crumb %}📰 Новости{% endblock %}
+
+{% block content %}
+<style>
+    .news-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 24px;
+        margin: 30px 0;
+    }
+    .news-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        transition: transform .15s, box-shadow .15s;
+        display: flex;
+        flex-direction: column;
+    }
+    .news-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+    }
+    .news-image {
+        width: 100%;
+        aspect-ratio: 4/3;
+        object-fit: cover;
+        background: var(--bg-soft);
+    }
+    .news-body {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+    .news-title {
+        font-size: var(--fs-lg);
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+    .news-desc {
+        color: var(--muted);
+        font-size: var(--fs-sm);
+        flex: 1;
+        margin-bottom: 12px;
+        line-height: 1.5;
+    }
+    .news-date {
+        font-size: var(--fs-2xs);
+        color: var(--faint);
+        margin-bottom: 12px;
+    }
+</style>
+
+<h1>📰 Новости</h1>
+<p style="color: var(--muted);">Последние обновления и объявления платформы</p>
+
+{% if news %}
+<div class="news-grid">
+    {% for item in news %}
+    <div class="news-card">
+        {% if item.image %}
+            <img src="{{ item.image.url }}" alt="{{ item.title }}" class="news-image" style="object-fit: cover;">
+        {% else %}
+            <div class="news-image" style="background: var(--brand-gradient); display: grid; place-items: center; color: #fff; font-size: 48px;">📰</div>
+        {% endif %}
+        <div class="news-body">
+            <div class="news-title">{{ item.title }}</div>
+            <div class="news-date">{{ item.created_at|date:"d.m.Y" }}</div>
+            <div class="news-desc">{{ item.description }}</div>
+            {% if item.link %}
+            <a href="{{ item.link }}" target="_blank" class="btn sm" style="width: 100%; text-align: center; margin-top: auto;">{{ item.link_text }}</a>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card" style="text-align: center; padding: 60px 20px;">
+    <div style="font-size: 48px; margin-bottom: 12px;">📭</div>
+    <p style="color: var(--muted);">Новостей пока нет</p>
+</div>
+{% endif %}
+{% endblock %}
