@@ -78,6 +78,17 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'lms.urls'
 
+# --- CSRF Configuration ---
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.railway.app',
+    'https://*.onrender.com',
+    'https://*.koyeb.app',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+]
+CSRF_COOKIE_SECURE = False  # Set to True in production with HTTPS
+CSRF_COOKIE_HTTPONLY = False
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
