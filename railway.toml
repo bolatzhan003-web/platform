@@ -1,0 +1,8 @@
+[build]
+builder = "nixpacks"
+
+[env]
+PYTHON_VERSION = "3.12"
+
+[start]
+cmd = "gunicorn lms.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 120"
