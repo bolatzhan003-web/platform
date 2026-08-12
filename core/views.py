@@ -5,12 +5,15 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_http_methods
 from django.db.models import Prefetch, Count
+from django.template.context_processors import csrf
 
 from .models import (
     Course,
     Lesson,
     LessonMaterial,
     LessonProgress,
+    News,
+    PlatformSettings,
     User,
 )
 
@@ -123,10 +126,17 @@ def logout_view(request):
 # Главная / вход
 # ---------------------------------------------------------------------------
 def home(request):
-    """Стартовая страница: логин -> дашборд, гость -> приветствие + вход."""
+    """Стартовая страница: логин -> дашборд, гость -> приветствие + вход + новости."""
     if request.user.is_authenticated:
         return redirect('dashboard')
-    return render(request, 'home.html')
+
+    news = News.objects.filter(is_active=True)
+    settings = PlatformSettings.objects.first()
+
+    return render(request, 'home.html', {
+        'news': news,
+        'settings': settings,
+    })
 
 
 @login_required

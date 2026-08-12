@@ -8,6 +8,8 @@ from .models import (
     Lesson,
     LessonMaterial,
     LessonProgress,
+    News,
+    PlatformSettings,
     User,
 )
 
@@ -38,9 +40,13 @@ class CourseAdmin(admin.ModelAdmin):
     list_display = ('title', 'author', 'lesson_count', 'created_at')
     list_filter = ('created_at',)
     search_fields = ('title', 'description', 'author__username', 'author__last_name')
-    filter_horizontal = ('students',)  # мульти-выбор учеников
+    filter_horizontal = ('students',)
     autocomplete_fields = ('author',)
     inlines = [LessonInline]
+    fieldsets = (
+        ('Основное', {'fields': ('title', 'description', 'cover')}),
+        ('Автор и доступ', {'fields': ('author', 'students')}),
+    )
 
 
 class LessonMaterialInline(admin.TabularInline):
@@ -91,3 +97,34 @@ class ClassGroupAdmin(admin.ModelAdmin):
     @admin.display(description='Учеников')
     def student_count(self, obj):
         return obj.students.count()
+
+
+@admin.register(PlatformSettings)
+class PlatformSettingsAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+
+    def has_add_permission(self, request):
+        return not PlatformSettings.objects.exists()
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
+@admin.register(News)
+class NewsAdmin(admin.ModelAdmin):
+    list_display = ('title', 'is_active', 'order', 'created_at', 'preview_link')
+    list_filter = ('is_active', 'created_at')
+    list_editable = ('order', 'is_active')
+    search_fields = ('title', 'description')
+
+    fieldsets = (
+        ('Основное', {'fields': ('title', 'image', 'description')}),
+        ('Ссылка (опционально)', {'fields': ('link', 'link_text')}),
+        ('Видимость', {'fields': ('is_active', 'order')}),
+    )
+
+    @admin.display(description='Ссылка')
+    def preview_link(self, obj):
+        if obj.link:
+            return format_html('<a href="{}" target="_blank">Открыть →</a>', obj.link)
+        return '—'

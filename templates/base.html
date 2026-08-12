@@ -378,7 +378,14 @@
 <div class="layout">
     {% if user.is_authenticated %}
     <aside class="sidebar">
-        <a href="{% url 'dashboard' %}" class="brand"><span class="logo">🎓</span>LMS</a>
+        <a href="{% url 'dashboard' %}" class="brand">
+            {% if platform_settings.logo %}
+                <img src="{{ platform_settings.logo.url }}" alt="Logo" style="width:34px; height:34px; border-radius:10px;">
+            {% else %}
+                <span class="logo">🎓</span>
+            {% endif %}
+            {{ platform_settings.name|default:"LMS" }}
+        </a>
         <button class="burger" aria-label="Открыть меню" aria-expanded="false" onclick="document.querySelector('.sidebar .nav').classList.toggle('open'); this.setAttribute('aria-expanded', document.querySelector('.sidebar .nav').classList.contains('open'));">☰</button>
         <nav class="nav">
             <div class="nav-label">Обучение</div>

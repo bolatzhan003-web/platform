@@ -2,6 +2,25 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
+class PlatformSettings(models.Model):
+    """Глобальные настройки платформы: логотип и название."""
+
+    name = models.CharField('Название платформы', max_length=200, default='LMS')
+    logo = models.ImageField('Логотип', upload_to='platform/', blank=True, null=True)
+
+    class Meta:
+        verbose_name = 'Настройки платформы'
+        verbose_name_plural = 'Настройки платформы'
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.pk and PlatformSettings.objects.exists():
+            return
+        super().save(*args, **kwargs)
+
+
 class User(AbstractUser):
     """
     Кастомная модель пользователя с ролями: student / teacher / admin.
@@ -75,6 +94,7 @@ class Course(models.Model):
 
     title = models.CharField('Название курса', max_length=200)
     description = models.TextField('Описание', blank=True)
+    cover = models.ImageField('Обложка курса', upload_to='courses/', blank=True, null=True)
     author = models.ForeignKey(
         User,
         verbose_name='Автор (учитель)',
@@ -246,3 +266,24 @@ class LessonProgress(models.Model):
     @property
     def is_complete(self):
         return self.completed_at is not None
+
+
+class News(models.Model):
+    """Новости платформы: картинка, описание, опциональная ссылка."""
+
+    title = models.CharField('Название новости', max_length=200)
+    image = models.ImageField('Изображение', upload_to='news/')
+    description = models.TextField('Описание')
+    link = models.URLField('Ссылка (опционально)', blank=True, null=True, help_text='Ссылка для кнопки перехода')
+    link_text = models.CharField('Текст кнопки', max_length=100, blank=True, default='Подробнее')
+    is_active = models.BooleanField('Активна', default=True)
+    created_at = models.DateTimeField('Дата создания', auto_now_add=True)
+    order = models.PositiveIntegerField('Порядок', default=0)
+
+    class Meta:
+        verbose_name = 'Новость'
+        verbose_name_plural = 'Новости'
+        ordering = ['-order', '-created_at']
+
+    def __str__(self):
+        return self.title
