@@ -3,6 +3,8 @@ from functools import wraps
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.http import require_http_methods
+from django.db.models import Prefetch, Count
 
 from .models import (
     Course,
@@ -51,6 +53,66 @@ def _get_or_create_progress(student, lesson):
 
 
 # ---------------------------------------------------------------------------
+# Регистрация
+# ---------------------------------------------------------------------------
+@require_http_methods(['GET', 'POST'])
+def register(request):
+    """Регистрация нового пользователя (только ученики)."""
+    if request.user.is_authenticated:
+        return redirect('dashboard')
+
+    if request.method == 'POST':
+        username = request.POST.get('username', '').strip()
+        email = request.POST.get('email', '').strip()
+        password1 = request.POST.get('password1', '')
+        password2 = request.POST.get('password2', '')
+        first_name = request.POST.get('first_name', '').strip()
+
+        errors = []
+
+        if not username:
+            errors.append('Укажите имя пользователя')
+        elif len(username) < 3:
+            errors.append('Имя пользователя должно быть минимум 3 символа')
+        elif User.objects.filter(username=username).exists():
+            errors.append('Это имя пользователя уже занято')
+
+        if not email:
+            errors.append('Укажите email')
+        elif User.objects.filter(email=email).exists():
+            errors.append('Этот email уже зарегистрирован')
+
+        if not password1:
+            errors.append('Укажите пароль')
+        elif len(password1) < 6:
+            errors.append('Пароль должен быть минимум 6 символов')
+
+        if password1 != password2:
+            errors.append('Пароли не совпадают')
+
+        if errors:
+            return render(request, 'registration/register.html', {
+                'username': username,
+                'email': email,
+                'first_name': first_name,
+                'errors': errors,
+            })
+
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=password1,
+            first_name=first_name,
+            role='student',
+        )
+
+        messages.success(request, 'Регистрация успешна! Теперь войдите в аккаунт.')
+        return redirect('login')
+
+    return render(request, 'registration/register.html')
+
+
+# ---------------------------------------------------------------------------
 # Главная / вход
 # ---------------------------------------------------------------------------
 def home(request):
@@ -76,12 +138,11 @@ def dashboard(request):
 @role_required('student', 'teacher')
 def student_dashboard(request):
     student = request.user
-    courses = student.courses.all()
+    courses = student.courses.prefetch_related('lessons').all()
     lessons_total = sum(c.lessons.count() for c in courses)
     materials_total = LessonMaterial.objects.filter(
         lesson__course__in=courses,
     ).count() if courses else 0
-    # Сводный прогресс по курсам
     progress_data = []
     for course in courses:
         opened, completed, total, pct = course.progress_for(student)

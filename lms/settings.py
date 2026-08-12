@@ -30,6 +30,26 @@ ALLOWED_HOSTS = [h.strip() for h in os.getenv(
 ).split(',') if h.strip()]
 
 # ---------------------------------------------------------------
+# Internationalization
+# ---------------------------------------------------------------
+LANGUAGE_CODE = 'ru'
+
+LANGUAGES = [
+    ('ru', 'Русский'),
+    ('kk', 'Қазақша'),
+]
+
+LOCALE_PATHS = [
+    BASE_DIR / 'locale',
+]
+
+TIME_ZONE = 'UTC'
+
+USE_I18N = True
+
+USE_TZ = True
+
+# ---------------------------------------------------------------
 # Applications
 # ---------------------------------------------------------------
 INSTALLED_APPS = [
@@ -48,6 +68,7 @@ MIDDLEWARE = [
     # Serve static files in production (must be high in the list)
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',  # i18n
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
