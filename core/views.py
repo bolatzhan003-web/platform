@@ -126,14 +126,14 @@ def logout_view(request):
 # Главная / вход
 # ---------------------------------------------------------------------------
 def home(request):
-    """Стартовая страница: логин -> дашборд, гость -> приветствие + вход + новости."""
+    """Главная страница с новостями и информацией о платформе."""
     if request.user.is_authenticated:
         return redirect('dashboard')
 
-    news = News.objects.filter(is_active=True)
+    news = News.objects.filter(is_active=True).order_by('-order', '-created_at')[:8]
     settings = PlatformSettings.objects.first()
 
-    return render(request, 'home.html', {
+    return render(request, 'index.html', {
         'news': news,
         'settings': settings,
     })

@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+{% block title %}{{ platform_settings.name|default:"LMS" }} — Образовательная платформа{% endblock %}
+{% block body %}
+<style>
+    .news-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 24px;
+        margin: 40px 0;
+    }
+    .news-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        transition: transform .15s, box-shadow .15s, border-color .15s;
+        display: flex;
+        flex-direction: column;
+    }
+    .news-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+        border-color: var(--brand-2);
+    }
+    .news-image {
+        width: 100%;
+        aspect-ratio: 4/3;
+        object-fit: cover;
+        background: var(--bg-soft);
+    }
+    .news-body {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+    .news-title {
+        font-size: var(--fs-lg);
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: var(--ink);
+    }
+    .news-desc {
+        color: var(--muted);
+        font-size: var(--fs-sm);
+        flex: 1;
+        margin-bottom: 12px;
+        line-height: 1.5;
+    }
+    .news-date {
+        font-size: var(--fs-2xs);
+        color: var(--faint);
+        margin-bottom: 12px;
+    }
+    .hero-section {
+        background: linear-gradient(135deg, var(--brand-soft) 0%, rgba(139, 123, 255, 0.05) 100%);
+        border-radius: var(--radius-lg);
+        padding: 60px 40px;
+        text-align: center;
+        margin-bottom: 60px;
+    }
+    .hero-logo {
+        width: 100px;
+        height: 100px;
+        border-radius: 20px;
+        background: var(--brand-gradient);
+        display: grid;
+        place-items: center;
+        color: #fff;
+        font-size: 48px;
+        margin: 0 auto 24px;
+        box-shadow: var(--shadow-lg);
+        overflow: hidden;
+    }
+    .hero-logo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .hero-title {
+        font-size: var(--fs-3xl);
+        font-weight: 800;
+        margin-bottom: 12px;
+        color: var(--ink);
+    }
+    .hero-subtitle {
+        font-size: var(--fs-lg);
+        color: var(--muted);
+        max-width: 600px;
+        margin: 0 auto 32px;
+    }
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+        margin: 40px 0;
+    }
+    .feature-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px;
+        text-align: center;
+    }
+    .feature-icon {
+        font-size: 36px;
+        margin-bottom: 12px;
+    }
+    .feature-title {
+        font-weight: 600;
+        margin-bottom: 6px;
+    }
+    .feature-desc {
+        font-size: var(--fs-sm);
+        color: var(--muted);
+    }
+</style>
+
+<div class="layout" style="min-height: auto; flex-direction: column;">
+    {% if user.is_authenticated %}
+    <aside class="sidebar">
+        <a href="{% url 'dashboard' %}" class="brand">
+            {% if platform_settings.logo %}
+                <img src="{{ platform_settings.logo.url }}" alt="Logo" style="width:34px; height:34px; border-radius:10px; object-fit: cover;">
+            {% else %}
+                <span class="logo">🎓</span>
+            {% endif %}
+            {{ platform_settings.name|default:"LMS" }}
+        </a>
+        <button class="burger" aria-label="Открыть меню" aria-expanded="false" onclick="document.querySelector('.sidebar .nav').classList.toggle('open'); this.setAttribute('aria-expanded', document.querySelector('.sidebar .nav').classList.contains('open'));">☰</button>
+        <nav class="nav">
+            <div class="nav-label">Обучение</div>
+            <a href="{% url 'course_catalog' %}" class="nav-item"><span class="ico">📚</span>Все курсы</a>
+            {% if user.is_student or user.is_staff %}
+            <a href="{% url 'student_dashboard' %}" class="nav-item"><span class="ico">🏠</span>Мои курсы</a>
+            <a href="{% url 'my_progress' %}" class="nav-item"><span class="ico">📈</span>Мой прогресс</a>
+            {% endif %}
+            {% if user.is_teacher or user.is_staff %}
+            <div class="nav-label">Преподавание</div>
+            <a href="{% url 'teacher_dashboard' %}" class="nav-item"><span class="ico">🧑‍🏫</span>Кабинет учителя</a>
+            {% endif %}
+            {% if user.is_staff %}
+            <div class="nav-label">Администрирование</div>
+            <a href="{% url 'admin:index' %}" class="nav-item"><span class="ico">⚙️</span>Админ-панель</a>
+            {% endif %}
+        </nav>
+    </aside>
+    {% endif %}
+
+    <main class="main" style="width: 100%; max-width: 1200px;">
+        <div class="hero-section">
+            <div class="hero-logo">
+                {% if platform_settings.logo %}
+                    <img src="{{ platform_settings.logo.url }}" alt="Logo" style="object-fit: cover;">
+                {% else %}
+                    🎓
+                {% endif %}
+            </div>
+            <h1 class="hero-title">{{ platform_settings.name|default:"LMS" }}</h1>
+            <p class="hero-subtitle">Платформа для обучения: курсы, видеоуроки, материалы и отслеживание прогресса</p>
+            {% if not user.is_authenticated %}
+            <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                <a class="btn lg" href="{% url 'login' %}">Войти в систему</a>
+                <a class="btn lg secondary" href="{% url 'register' %}">Зарегистрироваться</a>
+            </div>
+            {% else %}
+            <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                <a class="btn lg" href="{% url 'course_catalog' %}">📚 Все курсы</a>
+                {% if user.is_student %}
+                <a class="btn lg secondary" href="{% url 'student_dashboard' %}">🏠 Мои курсы</a>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">📚</div>
+                <div class="feature-title">Курсы</div>
+                <div class="feature-desc">Доступ к полным курсам от учителей</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎬</div>
+                <div class="feature-title">Видеоуроки</div>
+                <div class="feature-desc">Встроенные видеоплееры с YouTube</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📈</div>
+                <div class="feature-title">Прогресс</div>
+                <div class="feature-desc">Отслеживание вашего прогресса</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <div class="feature-title">Мобильное</div>
+                <div class="feature-desc">Учитесь с любого устройства</div>
+            </div>
+        </div>
+
+        {% if news %}
+        <section style="margin: 60px 0;">
+            <h2 style="margin-bottom: 24px; text-align: center; font-size: var(--fs-2xl);">📰 Последние новости</h2>
+            <div class="news-grid">
+                {% for item in news %}
+                <div class="news-card">
+                    {% if item.image %}
+                    <img src="{{ item.image.url }}" alt="{{ item.title }}" class="news-image" style="object-fit: cover;">
+                    {% else %}
+                    <div class="news-image" style="background: var(--brand-gradient); display: grid; place-items: center; color: #fff; font-size: 48px;">📰</div>
+                    {% endif %}
+                    <div class="news-body">
+                        <div class="news-title">{{ item.title }}</div>
+                        <div class="news-date">{{ item.created_at|date:"d.m.Y" }}</div>
+                        <div class="news-desc">{{ item.description|truncatewords:30 }}</div>
+                        {% if item.link %}
+                        <a href="{{ item.link }}" target="_blank" class="btn sm" style="width: 100%; text-align: center; margin-top: auto;">{{ item.link_text }}</a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
+        <footer style="text-align: center; padding: 40px 0; color: var(--muted); font-size: var(--fs-sm); border-top: 1px solid var(--border); margin-top: 60px;">
+            <p>© {% now "Y" %} {{ platform_settings.name|default:"LMS" }} · Образовательная платформа</p>
+        </footer>
+    </main>
+</div>
+{% endblock %}

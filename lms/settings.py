@@ -169,7 +169,9 @@ STORAGES = {
 # Media files (user uploads)
 # ---------------------------------------------------------------
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = os.getenv('RENDER_MEDIA_ROOT', BASE_DIR / 'media')
+if os.getenv('RENDER'):
+    MEDIA_ROOT = '/opt/render/project/media'
 
 # ---------------------------------------------------------------
 # Auth

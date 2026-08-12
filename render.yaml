@@ -14,3 +14,11 @@ services:
         value: "False"
       - key: ALLOWED_HOSTS
         value: ".onrender.com,localhost,127.0.0.1"
+    disk:
+      - name: media
+        mountPath: /opt/render/project/media
+        sizeGB: 10
+
+databases:
+  - name: postgres
+    ipAllowList: []
