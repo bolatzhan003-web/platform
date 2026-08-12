@@ -19,13 +19,15 @@
         {% for item in progress_data %}
         {% with course=item.course %}
         <a href="{% url 'course_detail' course.pk %}" class="course-card" style="color:var(--ink);">
-            <div class="thumb">
-                {% if course.title|slice:":1" == "М" %}📐
-                {% elif course.title|slice:":1" == "Ф" %}⚛️
-                {% elif course.title|slice:":1" == "Г" %}🌍
-                {% elif course.title|slice:":1" == "И" %}💻
-                {% elif course.title|slice:":1" == "А" %}🔡
-                {% else %}📘{% endif %}
+            <div class="thumb" style="{% if course.cover %}background-image:url('{{ course.cover.url }}'); background-size:cover; background-position:center;{% endif %}">
+                {% if not course.cover %}
+                    {% if course.title|slice:":1" == "М" %}📐
+                    {% elif course.title|slice:":1" == "Ф" %}⚛️
+                    {% elif course.title|slice:":1" == "Г" %}🌍
+                    {% elif course.title|slice:":1" == "И" %}💻
+                    {% elif course.title|slice:":1" == "А" %}🔡
+                    {% else %}📘{% endif %}
+                {% endif %}
             </div>
             <div class="body">
                 <h3>{{ course.title }}</h3>
