@@ -3,9 +3,13 @@
 {% block crumb %}Профиль{% endblock %}
 {% block content %}
 <div style="display:flex; align-items:center; gap:22px; flex-wrap:wrap; margin-bottom:24px;">
+    {% if user.avatar %}
+    <img src="{{ user.avatar.url }}" alt="Avatar" style="width:88px; height:88px; border-radius:50%; object-fit:cover; box-shadow:var(--shadow);">
+    {% else %}
     <div class="avatar" style="width:88px; height:88px; border-radius:50%; background:var(--brand-gradient); color:#fff; display:grid; place-items:center; font-size:34px; font-weight:700; box-shadow:var(--shadow);">
         {{ user.get_full_name|default:user.username|first|upper }}
     </div>
+    {% endif %}
     <div>
         <h1 style="margin:0 0 4px;">{{ user.get_full_name|default:user.username }}</h1>
         <p class="muted" style="margin:0;">
@@ -13,6 +17,7 @@
             {% if user.is_staff %} · администратор{% endif %}
         </p>
         {% if user.email %}<p class="muted" style="margin:2px 0 0;">✉️ {{ user.email }}</p>{% endif %}
+        {% if user.phone %}<p class="muted" style="margin:2px 0 0;">📱 {{ user.phone }}</p>{% endif %}
     </div>
 </div>
 
@@ -27,11 +32,27 @@
 </div>
 
 <div class="card">
+    <h2 style="margin-bottom:4px;">📸 Фото профиля</h2>
+    <p class="muted" style="margin-bottom:16px;">Загрузите или измените вашу фотографию профиля.</p>
+    <form method="post" enctype="multipart/form-data" action="{% url 'profile_update_avatar' %}">
+        {% csrf_token %}
+        <div class="field">
+            <label for="avatar">Выберите фото:</label>
+            <input type="file" id="avatar" name="avatar" accept="image/*" required>
+        </div>
+        <button type="submit" class="btn">Загрузить фото</button>
+    </form>
+</div>
+
+<div class="card">
     <h2 style="margin-bottom:4px;">Настройки</h2>
     <p class="muted" style="margin-bottom:16px;">Управление аккаунтом.</p>
     <div style="display:flex; gap:12px; flex-wrap:wrap;">
         <a class="btn" href="{% url 'password_change' %}">🔒 Сменить пароль</a>
-        <a class="btn secondary" href="{% url 'logout' %}">Выйти из системы</a>
+        <form method="post" action="{% url 'logout' %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn secondary">Выйти из системы</button>
+        </form>
     </div>
 </div>
 

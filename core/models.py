@@ -36,6 +36,7 @@ class User(AbstractUser):
 
     role = models.CharField('Роль', max_length=20, choices=ROLE_CHOICES, default='student')
     phone = models.CharField('Номер телефона', max_length=20, blank=True, null=True, unique=True)
+    avatar = models.ImageField('Фото профиля', upload_to='avatars/', blank=True, null=True)
     created_at = models.DateTimeField('Дата регистрации', auto_now_add=True)
 
     class Meta:

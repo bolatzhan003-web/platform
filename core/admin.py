@@ -25,8 +25,9 @@ class CustomUserAdmin(UserAdmin):
 
     fieldsets = (
         ('Основное', {'fields': ('username', 'first_name', 'last_name', 'email', 'phone')}),
+        ('Профиль', {'fields': ('avatar', 'role')}),
         ('Пароль', {'fields': ('password',), 'classes': ('wide',)}),
-        ('Роль и доступ', {'fields': ('role', 'is_staff', 'is_superuser', 'is_active')}),
+        ('Доступ', {'fields': ('is_staff', 'is_superuser', 'is_active')}),
         ('Группы и права', {'fields': ('groups', 'user_permissions')}),
         ('Даты', {'fields': ('last_login', 'date_joined')}),
     )
@@ -34,7 +35,7 @@ class CustomUserAdmin(UserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('username', 'password1', 'password2', 'first_name', 'phone', 'email', 'role'),
+            'fields': ('username', 'password1', 'password2', 'first_name', 'phone', 'email', 'avatar', 'role'),
         }),
     )
 

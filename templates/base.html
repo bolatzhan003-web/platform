@@ -410,6 +410,45 @@
                 <div class="urole">{{ user.get_role_display }} · профиль →</div>
             </div>
         </a>
+
+        {% if news %}
+        <div style="margin-top:20px; padding-top:20px; border-top:1px solid var(--border);">
+            <div class="nav-label" style="margin-bottom:10px;">📰 Новости</div>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+                {% for item in news|slice:":3" %}
+                <a href="{% if item.link %}{{ item.link }}{% else %}#{% endif %}" target="{% if item.link %}_blank{% endif %}" style="padding:8px; border-radius:8px; background:var(--surface-2); text-decoration:none; color:var(--text); transition:background .2s; font-size:12px; line-height:1.4;">
+                    <div style="font-weight:600; color:var(--ink); margin-bottom:2px;">{{ item.title|truncatewords:5 }}</div>
+                    <div style="color:var(--muted); font-size:11px;">{{ item.description|truncatewords:10 }}</div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </aside>
+    {% else %}
+    <aside class="sidebar" style="border-bottom:1px solid var(--border);">
+        <a href="{% url 'home' %}" class="brand">
+            {% if platform_settings.logo %}
+                <img src="{{ platform_settings.logo.url }}" alt="Logo" style="width:34px; height:34px; border-radius:10px;">
+            {% else %}
+                <span class="logo">🎓</span>
+            {% endif %}
+            {{ platform_settings.name|default:"LMS" }}
+        </a>
+
+        {% if news %}
+        <div style="margin-top:20px;">
+            <div class="nav-label">📰 Новости</div>
+            <div style="display:flex; flex-direction:column; gap:8px; margin-top:10px;">
+                {% for item in news|slice:":5" %}
+                <a href="{% if item.link %}{{ item.link }}{% else %}#{% endif %}" target="{% if item.link %}_blank{% endif %}" style="padding:8px; border-radius:8px; background:var(--surface-2); text-decoration:none; color:var(--text); transition:background .2s; font-size:12px; line-height:1.4;">
+                    <div style="font-weight:600; color:var(--ink); margin-bottom:2px;">{{ item.title|truncatewords:5 }}</div>
+                    <div style="color:var(--muted); font-size:11px;">{{ item.description|truncatewords:10 }}</div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
     </aside>
     {% endif %}
 

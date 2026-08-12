@@ -275,6 +275,17 @@ def profile(request):
     return render(request, 'profile.html', context)
 
 
+@login_required
+@require_http_methods(['POST'])
+def profile_update_avatar(request):
+    """Обновление аватара пользователя."""
+    if 'avatar' in request.FILES:
+        request.user.avatar = request.FILES['avatar']
+        request.user.save()
+        messages.success(request, 'Фото профиля обновлено!')
+    return redirect('profile')
+
+
 # ---------------------------------------------------------------------------
 # Курсы и уроки
 # ---------------------------------------------------------------------------

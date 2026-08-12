@@ -25,6 +25,7 @@ urlpatterns = [
 
     # Профиль и смена пароля
     path('profile/', views.profile, name='profile'),
+    path('profile/avatar/', views.profile_update_avatar, name='profile_update_avatar'),
     path('password-change/', auth_views.PasswordChangeView.as_view(
         template_name='registration/password_change.html',
         success_url='/profile/',
