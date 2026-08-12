@@ -5,3 +5,5 @@ dj-database-url
 python-dotenv
 whitenoise
 Pillow
+cloudinary
+django-cloudinary-storage
