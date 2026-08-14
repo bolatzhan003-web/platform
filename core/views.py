@@ -116,7 +116,6 @@ def register(request):
 def logout_view(request):
     """Выход из аккаунта через POST."""
     auth.logout(request)
-    messages.success(request, 'Вы вышли из аккаунта.')
     return redirect('home')
 
 

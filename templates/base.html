@@ -468,6 +468,11 @@
             <div class="crumb">{% block crumb %}{% endblock %}</div>
             <div class="actions">
                 {% block topactions %}{% endblock %}
+                <a href="{% url 'profile' %}" class="btn ghost sm">👤 Профиль</a>
+                <form method="post" action="{% url 'logout' %}" style="display:inline; margin:0; padding:0;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn ghost sm" style="border:none; background:none; padding:10px 18px; font-size:14px; color:var(--brand); cursor:pointer;">Выйти →</button>
+                </form>
             </div>
         </div>
         {% else %}
