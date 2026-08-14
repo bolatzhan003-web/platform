@@ -351,9 +351,11 @@
 
         @media (max-width: 860px) {
             .layout { flex-direction: column; }
-            .sidebar { width: 100%; height: auto; position: static; border-right: none; border-bottom: 1px solid var(--border); }
+            .sidebar { width: 100%; height: auto; position: static; border-right: none; border-bottom: 1px solid var(--border); padding: 12px 16px; }
+            .sidebar .brand { padding: 0 0 12px 0; }
             .sidebar .nav { display: flex; flex-wrap: wrap; gap: 4px; }
             .sidebar .nav-label, .sidebar .user-card { display: none; }
+            .sidebar > div:last-child { display: none; }
             .main { padding: 20px; }
             .topbar { margin-bottom: 16px; }
             .course-card .body h3 { font-size: var(--fs-md); }
@@ -363,8 +365,10 @@
 
         @media (max-width: 640px) {
             .burger { display: inline-flex; }
-            .sidebar .nav { display: none; }
-            .sidebar .nav.open { display: flex; flex-direction: column; }
+            .sidebar { padding: 12px 16px; display: flex; align-items: center; gap: 12px; }
+            .sidebar .brand { padding: 0; margin: 0; }
+            .sidebar .nav { display: none; flex-direction: column; gap: 8px; position: absolute; top: 60px; left: 0; right: 0; background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 16px; z-index: 10; }
+            .sidebar .nav.open { display: flex; }
             .topbar .actions .btn.ghost { display: none; }
             .topbar .actions .btn.ghost:last-child { display: inline-flex; }
             .grid.courses { grid-template-columns: 1fr; }
