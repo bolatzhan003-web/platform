@@ -123,8 +123,10 @@ def logout_view(request):
 # Главная / вход
 # ---------------------------------------------------------------------------
 def home(request):
-    """Главная страница с hero секцией и новостями."""
-    return render(request, 'home.html')
+    """Главная страница: гости редиректятся на логин, авторизованные - на dashboard."""
+    if not request.user.is_authenticated:
+        return redirect('login')
+    return redirect('dashboard')
 
 
 @login_required
