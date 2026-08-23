@@ -86,8 +86,13 @@
             Платформа для обучения: курсы, видеоуроки, материалы и отслеживание прогресса
         </p>
         <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
-            <a class="btn lg" href="{% url 'course_catalog' %}">Все курсы</a>
-            <a class="btn lg secondary" href="{% url 'my_progress' %}">Мой прогресс</a>
+            {% if user.is_authenticated %}
+                <a class="btn lg" href="{% url 'course_catalog' %}">Все курсы</a>
+                <a class="btn lg secondary" href="{% url 'my_progress' %}">Мой прогресс</a>
+            {% else %}
+                <a class="btn lg" href="{% url 'login' %}">Войти в систему</a>
+                <a class="btn lg secondary" href="{% url 'register' %}">Зарегистрироваться</a>
+            {% endif %}
         </div>
     </div>
 
