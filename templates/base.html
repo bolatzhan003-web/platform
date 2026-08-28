@@ -480,6 +480,13 @@
             <div class="crumb">{% block crumb %}{% endblock %}</div>
             <div class="actions">
                 {% block topactions %}{% endblock %}
+                <form method="post" action="{% url 'django.views.i18n.set_language' %}" style="display:inline; margin:0;">
+                    {% csrf_token %}
+                    <select name="language" onchange="this.form.submit();" style="padding:8px 12px; border-radius:8px; border:1px solid var(--border-strong); background:var(--surface); cursor:pointer; font-size:13px; color:var(--text); font-weight:500;">
+                        <option value="ru" {% if request.LANGUAGE_CODE == 'ru' %}selected{% endif %}>🇷🇺 Русский</option>
+                        <option value="kk" {% if request.LANGUAGE_CODE == 'kk' %}selected{% endif %}>🇰🇿 Қазақ</option>
+                    </select>
+                </form>
                 <a href="{% url 'profile' %}" class="btn ghost sm">👤 Профиль</a>
                 <form method="post" action="{% url 'logout' %}" style="display:inline; margin:0; padding:0;">
                     {% csrf_token %}
