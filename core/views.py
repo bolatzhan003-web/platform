@@ -123,10 +123,21 @@ def logout_view(request):
 # Главная / вход
 # ---------------------------------------------------------------------------
 def home(request):
-    """Главная страница: гости редиректятся на логин, авторизованные - на dashboard."""
-    if not request.user.is_authenticated:
-        return redirect('login')
-    return redirect('dashboard')
+    """Главная страница: показывает новости и популярные курсы всем пользователям."""
+    news = News.objects.filter(is_active=True).order_by('-order')[:3]
+    courses = Course.objects.all()[:6]
+    platform_settings = PlatformSettings.objects.first()
+    featured_news = news.first() if news else None
+
+    context = {
+        'news': news,
+        'courses': courses,
+        'platform_settings': platform_settings,
+        'featured_news': featured_news,
+    }
+
+    # Гости видят главную страницу, авторизованные тоже видят главную (не редирект)
+    return render(request, 'home.html', context)
 
 
 @login_required

@@ -1,150 +1,651 @@
-{% extends 'base.html' %}
-{% block title %}{{ platform_settings.name|default:"LMS" }} — образовательная платформа{% endblock %}
-{% block body %}
-<style>
-    .hero-section {
-        background: linear-gradient(135deg, var(--brand-soft) 0%, rgba(139, 123, 255, 0.05) 100%);
-        border-radius: var(--radius-lg);
-        padding: 60px 40px;
-        text-align: center;
-        margin-bottom: 60px;
-    }
-    .hero-logo {
-        width: 100px;
-        height: 100px;
-        border-radius: 20px;
-        background: var(--brand-gradient);
-        display: grid;
-        place-items: center;
-        color: #fff;
-        font-size: 48px;
-        margin: 0 auto 24px;
-        box-shadow: var(--shadow-lg);
-        overflow: hidden;
-    }
-    .hero-logo img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-    .news-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 24px;
-        margin: 40px 0;
-    }
-    .news-card {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: var(--radius-lg);
-        overflow: hidden;
-        transition: transform .15s, box-shadow .15s;
-        display: flex;
-        flex-direction: column;
-        cursor: pointer;
-    }
-    .news-card:hover {
-        transform: translateY(-4px);
-        box-shadow: var(--shadow-lg);
-    }
-    .news-image {
-        width: 100%;
-        aspect-ratio: 4/3;
-        object-fit: cover;
-        background: var(--bg-soft);
-    }
-    .news-body {
-        padding: 20px;
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-    }
-    .news-title {
-        font-size: var(--fs-lg);
-        font-weight: 600;
-        margin-bottom: 8px;
-    }
-    .news-desc {
-        color: var(--muted);
-        font-size: var(--fs-sm);
-        flex: 1;
-        margin-bottom: 12px;
-    }
-</style>
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Образовательная платформа: курсы, видео, материалы для учеников и учителей.">
+    <meta name="theme-color" content="#6d5cff">
+    <title>{{ platform_settings.name|default:"LMS" }} — Образовательная платформа</title>
 
-<div style="width: 100%; max-width: 1100px; margin: 0 auto; padding: 0 var(--gutter);">
-    <div class="hero-section">
-        <div class="hero-logo">
-            {% if platform_settings.logo %}
-                <img src="{{ platform_settings.logo.url }}" alt="Logo" style="object-fit: cover;">
-            {% else %}
-                🎓
-            {% endif %}
-        </div>
-        <h1 style="font-size: var(--fs-3xl); margin-bottom: 12px;">{{ platform_settings.name|default:"LMS" }}</h1>
-        <p style="font-size: var(--fs-lg); color: var(--muted); max-width: 600px; margin: 0 auto 32px;">
-            Платформа для обучения: курсы, видеоуроки, материалы и отслеживание прогресса
-        </p>
-        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
-            {% if user.is_authenticated %}
-                <a class="btn lg" href="{% url 'course_catalog' %}">Все курсы</a>
-                <a class="btn lg secondary" href="{% url 'my_progress' %}">Мой прогресс</a>
-            {% else %}
-                <a class="btn lg" href="{% url 'login' %}">Войти в систему</a>
-                <a class="btn lg secondary" href="{% url 'register' %}">Зарегистрироваться</a>
-            {% endif %}
-        </div>
-    </div>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin: 40px 0;">
-        <div class="card" style="text-align: center; padding: 20px;">
-            <div style="font-size: 36px; margin-bottom: 12px;">📚</div>
-            <div style="font-weight: 600;">Курсы</div>
-            <div style="font-size: var(--fs-sm); color: var(--muted); margin-top: 6px;">Доступ к полным курсам</div>
-        </div>
-        <div class="card" style="text-align: center; padding: 20px;">
-            <div style="font-size: 36px; margin-bottom: 12px;">🎬</div>
-            <div style="font-weight: 600;">Видеоуроки</div>
-            <div style="font-size: var(--fs-sm); color: var(--muted); margin-top: 6px;">Встроенные видеоплееры</div>
-        </div>
-        <div class="card" style="text-align: center; padding: 20px;">
-            <div style="font-size: 36px; margin-bottom: 12px;">📈</div>
-            <div style="font-weight: 600;">Прогресс</div>
-            <div style="font-size: var(--fs-sm); color: var(--muted); margin-top: 6px;">Отслеживание прогресса</div>
-        </div>
-        <div class="card" style="text-align: center; padding: 20px;">
-            <div style="font-size: 36px; margin-bottom: 12px;">📱</div>
-            <div style="font-weight: 600;">Мобильное</div>
-            <div style="font-size: var(--fs-sm); color: var(--muted); margin-top: 6px;">Учитесь везде</div>
-        </div>
-    </div>
+    <style>
+        /* ============================================================
+           DESIGN TOKENS — Apple Design System
+           ============================================================ */
+        :root {
+            /* Neutrals with warm bias (Apple-style) */
+            --bg: #f5f5f7;
+            --surface: #ffffff;
+            --surface-secondary: #f9f9fb;
+            --border: #e5e5ea;
+            --border-strong: #d1d1d6;
 
-    {% if news %}
-    <section style="margin: 60px 0;">
-        <h2 style="text-align: center; font-size: var(--fs-2xl); margin-bottom: 30px;">📰 Последние новости</h2>
-        <div class="news-grid">
-            {% for item in news %}
-            <div class="news-card">
-                {% if item.image %}
-                    <img src="{{ item.image.url }}" alt="{{ item.title }}" class="news-image" style="object-fit: cover;">
-                {% else %}
-                    <div class="news-image" style="background: var(--brand-gradient); display: grid; place-items: center; color: #fff; font-size: 48px;">📰</div>
-                {% endif %}
-                <div class="news-body">
-                    <div class="news-title">{{ item.title }}</div>
-                    <div class="news-desc">{{ item.description|truncatewords:30 }}</div>
-                    {% if item.link %}
-                    <a href="{{ item.link }}" target="_blank" class="btn sm" style="width: 100%; text-align: center; margin-top: auto;">{{ item.link_text }}</a>
+            /* Text */
+            --text-primary: #3c3c43;
+            --text-secondary: #717175;
+            --text-tertiary: #a1a1a6;
+
+            /* Brand & Semantic */
+            --brand: #6d5cff;
+            --brand-light: #8b7bff;
+            --brand-soft: #f0ecff;
+            --success: #34c759;
+            --success-soft: #e8f9ef;
+            --warning: #ff9500;
+            --danger: #ff3b30;
+
+            /* Typography */
+            --font-display: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+            --fs-body: 16px;
+            --fs-body-sm: 14px;
+            --fs-body-xs: 13px;
+            --fs-headline: 28px;
+            --fs-title-1: 40px;
+            --fs-title-2: 32px;
+
+            /* Spacing */
+            --gap-xs: 4px;
+            --gap-sm: 8px;
+            --gap: 16px;
+            --gap-lg: 24px;
+            --gap-xl: 32px;
+
+            /* Radius */
+            --radius-sm: 6px;
+            --radius: 10px;
+            --radius-lg: 12px;
+            --radius-xl: 18px;
+
+            /* Shadows — minimal Apple-style */
+            --shadow-xs: 0 1px 3px rgba(0,0,0,.06);
+            --shadow: 0 4px 12px rgba(0,0,0,.08);
+            --shadow-lg: 0 12px 32px rgba(0,0,0,.1);
+        }
+
+        * { box-sizing: border-box; }
+        html { -webkit-tap-highlight-color: transparent; }
+        html, body { margin: 0; padding: 0; }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--text-primary);
+            font-size: var(--fs-body);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+        }
+
+        h1, h2, h3 { font-family: var(--font-display); margin: 0; }
+        h1 { font-size: var(--fs-title-1); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; }
+        h2 { font-size: var(--fs-title-2); font-weight: 700; line-height: 1.15; }
+        h3 { font-size: var(--fs-headline); font-weight: 700; line-height: 1.2; }
+        p { margin: 0; line-height: 1.6; }
+
+        a { color: var(--brand); text-decoration: none; transition: color .15s; }
+        a:hover { color: var(--brand-light); }
+
+        :focus-visible { outline: 3px solid var(--brand); outline-offset: 2px; border-radius: var(--radius-sm); }
+
+        /* ============================================================
+           HEADER / NAVIGATION
+           ============================================================ */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255, 255, 255, .95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: var(--gap) var(--gap-lg);
+        }
+
+        .header-content {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--gap-lg);
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: var(--gap-sm);
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+
+        .header-logo {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius);
+            background: linear-gradient(135deg, var(--brand) 0%, var(--brand-light) 100%);
+            display: grid;
+            place-items: center;
+            color: #fff;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .header-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: var(--radius);
+        }
+
+        .header-nav {
+            display: flex;
+            gap: var(--gap-xl);
+            margin-left: auto;
+            align-items: center;
+        }
+
+        .header-nav a {
+            font-size: var(--fs-body-sm);
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: color .15s;
+        }
+
+        .header-nav a:hover {
+            color: var(--text-primary);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--gap-sm);
+            padding: 10px 18px;
+            border-radius: var(--radius);
+            border: none;
+            font-size: var(--fs-body-sm);
+            font-weight: 600;
+            font-family: var(--font-body);
+            cursor: pointer;
+            text-decoration: none;
+            transition: all .15s;
+        }
+
+        .btn-primary {
+            background: var(--brand);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #5b4be6;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-secondary {
+            background: var(--surface-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-strong);
+        }
+
+        .btn-secondary:hover {
+            background: var(--surface);
+            border-color: var(--text-secondary);
+        }
+
+        /* ============================================================
+           HERO SECTION (Thesis)
+           ============================================================ */
+        .hero {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--bg) 0%, #f0ecff 100%);
+        }
+
+        .hero-content {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 80px var(--gap-lg) 60px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--gap-xl);
+            align-items: center;
+        }
+
+        .hero-text h1 {
+            margin-bottom: var(--gap);
+            color: var(--text-primary);
+        }
+
+        .hero-text p {
+            font-size: var(--fs-headline);
+            color: var(--text-secondary);
+            margin-bottom: var(--gap-lg);
+            line-height: 1.5;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: var(--gap);
+            flex-wrap: wrap;
+        }
+
+        .hero-visual {
+            position: relative;
+            aspect-ratio: 4/3;
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--brand) 0%, var(--brand-light) 100%);
+            display: grid;
+            place-items: center;
+            color: #fff;
+            font-size: 64px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .hero-visual img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* ============================================================
+           FEATURES SECTION
+           ============================================================ */
+        .features {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: var(--gap-xl) var(--gap-lg);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--gap-lg);
+        }
+
+        .feature {
+            text-align: center;
+            padding: var(--gap-lg);
+        }
+
+        .feature-icon {
+            font-size: 40px;
+            margin-bottom: var(--gap);
+        }
+
+        .feature h3 {
+            font-size: var(--fs-headline);
+            margin-bottom: var(--gap-sm);
+        }
+
+        .feature p {
+            color: var(--text-secondary);
+            font-size: var(--fs-body-sm);
+        }
+
+        /* ============================================================
+           NEWS SECTION
+           ============================================================ */
+        .news-section {
+            background: var(--surface);
+            padding: var(--gap-xl) var(--gap-lg);
+            border-top: 1px solid var(--border);
+            margin-top: var(--gap-xl);
+        }
+
+        .section-container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            margin-bottom: var(--gap-xl);
+        }
+
+        .section-header h2 {
+            margin-bottom: var(--gap-sm);
+        }
+
+        .section-header p {
+            color: var(--text-secondary);
+            font-size: var(--fs-body-sm);
+        }
+
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: var(--gap-lg);
+        }
+
+        .news-card {
+            background: var(--surface-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: all .2s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .news-card:hover {
+            border-color: var(--brand);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow);
+        }
+
+        .news-image {
+            width: 100%;
+            aspect-ratio: 4/3;
+            background: linear-gradient(135deg, var(--brand) 0%, var(--brand-light) 100%);
+            display: grid;
+            place-items: center;
+            color: #fff;
+            font-size: 40px;
+            overflow: hidden;
+        }
+
+        .news-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .news-body {
+            padding: var(--gap-lg);
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .news-body h3 {
+            font-size: var(--fs-headline);
+            margin-bottom: var(--gap-sm);
+        }
+
+        .news-body p {
+            color: var(--text-secondary);
+            font-size: var(--fs-body-sm);
+            flex: 1;
+            margin-bottom: var(--gap);
+        }
+
+        .news-body a {
+            align-self: flex-start;
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            background: var(--brand-soft);
+            color: var(--brand);
+            font-weight: 600;
+            font-size: var(--fs-body-xs);
+            transition: background .15s;
+        }
+
+        .news-body a:hover {
+            background: #e6deff;
+        }
+
+        /* ============================================================
+           COURSES SECTION
+           ============================================================ */
+        .courses-section {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: var(--gap-xl) var(--gap-lg);
+        }
+
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: var(--gap-lg);
+        }
+
+        .course-card {
+            background: var(--surface-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: all .2s;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .course-card:hover {
+            border-color: var(--brand);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow);
+        }
+
+        .course-cover {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: linear-gradient(135deg, var(--brand) 0%, var(--brand-light) 100%);
+            display: grid;
+            place-items: center;
+            color: #fff;
+            font-size: 36px;
+            overflow: hidden;
+        }
+
+        .course-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .course-info {
+            padding: var(--gap-lg);
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .course-info h3 {
+            font-size: var(--fs-headline);
+            margin-bottom: var(--gap-sm);
+        }
+
+        .course-info p {
+            color: var(--text-secondary);
+            font-size: var(--fs-body-sm);
+            flex: 1;
+            margin-bottom: var(--gap);
+        }
+
+        .course-meta {
+            display: flex;
+            gap: var(--gap-sm);
+            font-size: var(--fs-body-xs);
+            color: var(--text-tertiary);
+        }
+
+        /* ============================================================
+           FOOTER
+           ============================================================ */
+        .footer {
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            padding: var(--gap-xl) var(--gap-lg);
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: var(--fs-body-sm);
+        }
+
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
+        @media (max-width: 768px) {
+            .header-nav {
+                display: none;
+            }
+
+            .hero-content {
+                grid-template-columns: 1fr;
+                padding: 60px var(--gap) 40px;
+            }
+
+            h1 {
+                font-size: var(--fs-title-2);
+            }
+
+            .hero-text p {
+                font-size: var(--fs-headline);
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+                padding: var(--gap-lg);
+            }
+
+            .news-grid,
+            .courses-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header-content">
+            <a href="{% url 'home' %}" class="header-brand">
+                <div class="header-logo">
+                    {% if platform_settings.logo %}
+                        <img src="{{ platform_settings.logo.url }}" alt="Logo">
+                    {% else %}
+                        🎓
                     {% endif %}
                 </div>
+                {{ platform_settings.name|default:"LMS" }}
+            </a>
+            <nav class="header-nav">
+                <a href="{% url 'course_catalog' %}">Курсы</a>
+                <a href="#news">Новости</a>
+                <a href="{% url 'login' %}" class="btn btn-secondary">Войти</a>
+                <a href="{% url 'register' %}" class="btn btn-primary">Регистрация</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- HERO (Thesis) -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>Образование, которое движется</h1>
+                <p>Учитесь в своем темпе. Все курсы, видео и материалы в одном месте.</p>
+                <div class="hero-actions">
+                    <a href="{% url 'course_catalog' %}" class="btn btn-primary">Начать обучение</a>
+                    <a href="#news" class="btn btn-secondary">Смотреть новости</a>
+                </div>
             </div>
-            {% endfor %}
+            <div class="hero-visual">
+                {% if featured_news %}
+                    {% if featured_news.image %}
+                        <img src="{{ featured_news.image.url }}" alt="{{ featured_news.title }}">
+                    {% else %}
+                        📚
+                    {% endif %}
+                {% else %}
+                    📚
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="features">
+        <div class="feature">
+            <div class="feature-icon">📚</div>
+            <h3>Курсы</h3>
+            <p>Полные курсы от опытных учителей</p>
+        </div>
+        <div class="feature">
+            <div class="feature-icon">🎬</div>
+            <h3>Видео</h3>
+            <p>Высококачественные видеоуроки</p>
+        </div>
+        <div class="feature">
+            <div class="feature-icon">📈</div>
+            <h3>Прогресс</h3>
+            <p>Отслеживайте ваш прогресс</p>
+        </div>
+        <div class="feature">
+            <div class="feature-icon">📱</div>
+            <h3>Везде</h3>
+            <p>Учитесь на любом устройстве</p>
+        </div>
+    </section>
+
+    <!-- NEWS SECTION -->
+    {% if news %}
+    <section class="news-section" id="news">
+        <div class="section-container">
+            <div class="section-header">
+                <h2>Последние новости</h2>
+                <p>Узнайте о новых курсах и обновлениях платформы</p>
+            </div>
+            <div class="news-grid">
+                {% for item in news|slice:":3" %}
+                <article class="news-card">
+                    <div class="news-image">
+                        {% if item.image %}
+                            <img src="{{ item.image.url }}" alt="{{ item.title }}">
+                        {% else %}
+                            📰
+                        {% endif %}
+                    </div>
+                    <div class="news-body">
+                        <h3>{{ item.title }}</h3>
+                        <p>{{ item.description|truncatewords:20 }}</p>
+                        {% if item.link %}
+                            <a href="{{ item.link }}" target="_blank">{{ item.link_text }}</a>
+                        {% endif %}
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
         </div>
     </section>
     {% endif %}
 
-    <footer style="text-align: center; padding: 40px 0; color: var(--muted); border-top: 1px solid var(--border); margin-top: 60px;">
+    <!-- COURSES SECTION -->
+    <section class="courses-section">
+        <div class="section-header">
+            <h2>Популярные курсы</h2>
+            <p>Начните обучение с одного из наших лучших курсов</p>
+        </div>
+        <div class="courses-grid">
+            {% for course in courses|slice:":6" %}
+            <article class="course-card" onclick="window.location='{% url 'course_detail' course.pk %}';">
+                <div class="course-cover">
+                    {% if course.cover %}
+                        <img src="{{ course.cover.url }}" alt="{{ course.title }}">
+                    {% else %}
+                        📘
+                    {% endif %}
+                </div>
+                <div class="course-info">
+                    <h3>{{ course.title }}</h3>
+                    <p>{{ course.description|truncatewords:15 }}</p>
+                    <div class="course-meta">
+                        <span>🎬 {{ course.lesson_count }} уроков</span>
+                        {% if course.author %}
+                            <span>👨‍🏫 {{ course.author.get_full_name|default:course.author.username }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
         <p>© {% now "Y" %} {{ platform_settings.name|default:"LMS" }} · Образовательная платформа</p>
     </footer>
-</div>
-{% endblock %}
+</body>
+</html>
