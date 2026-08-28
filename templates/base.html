@@ -482,7 +482,7 @@
                 {% block topactions %}{% endblock %}
                 <form method="post" action="{% url 'django.views.i18n.set_language' %}" style="display:inline; margin:0;">
                     {% csrf_token %}
-                    <select name="language" onchange="this.form.submit();" style="padding:8px 12px; border-radius:8px; border:1px solid var(--border-strong); background:var(--surface); cursor:pointer; font-size:13px; color:var(--text); font-weight:500;">
+                    <select name="language" onchange="this.form.submit();" style="padding:8px 12px; border-radius:8px; border:1px solid var(--border); background:var(--surface); cursor:pointer; font-size:13px; color:var(--text-primary); font-weight:500;">
                         <option value="ru" {% if request.LANGUAGE_CODE == 'ru' %}selected{% endif %}>🇷🇺 Русский</option>
                         <option value="kk" {% if request.LANGUAGE_CODE == 'kk' %}selected{% endif %}>🇰🇿 Қазақ</option>
                     </select>
@@ -500,7 +500,7 @@
             <div class="actions">
                 <form method="post" action="{% url 'django.views.i18n.set_language' %}" style="display:inline; margin:0;">
                     {% csrf_token %}
-                    <select name="language" onchange="this.form.submit();" style="padding:8px 12px; border-radius:8px; border:1px solid var(--border-strong); background:var(--surface); cursor:pointer; font-size:13px; color:var(--text);">
+                    <select name="language" onchange="this.form.submit();" style="padding:8px 12px; border-radius:8px; border:1px solid var(--border); background:var(--surface); cursor:pointer; font-size:13px; color:var(--text-primary);">
                         <option value="ru" {% if request.LANGUAGE_CODE == 'ru' %}selected{% endif %}>Русский</option>
                         <option value="kk" {% if request.LANGUAGE_CODE == 'kk' %}selected{% endif %}>Қазақ</option>
                     </select>
