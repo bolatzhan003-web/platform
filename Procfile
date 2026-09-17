@@ -1,2 +1,2 @@
-web: gunicorn lms.wsgi --log-file -
-release: python manage.py migrate
+web: gunicorn lms.wsgi
+release: python manage.py migrate && python create_admin.py
